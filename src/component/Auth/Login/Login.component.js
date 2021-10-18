@@ -1,0 +1,103 @@
+import React, { Component } from "react";
+import { Submitbtn } from "../../Common/Submitbtn/Submitbtn.component";
+import './Login.Component.css'
+const DefaultForm={
+    username:'',
+    password:'',
+}
+export class Login extends Component{
+    constructor(){
+        super()
+        this.state={
+            data:{
+                ...DefaultForm
+            },
+            error:{
+                ...DefaultForm
+            },
+            issubmitting:false,
+            remember_me:false,
+            isValidForm:false,
+        }
+        console.log("at first constructor")
+       
+    }
+
+    handleChange=(e)=>{
+        var {name,value,type,checked}=e.target
+        if(type==="checkbox"){
+            return this.setState({
+                [name]:checked
+            })
+           
+        }
+       this.setState((preState)=>{
+           return({
+                data:{
+                    ...preState.data,
+                    [name]:value
+                }
+           })
+       },()=>{
+           if(this.state.error[name]){
+               this.validateform();
+           }
+
+       })
+    }
+    validateform(){
+        let usernameErr=this.state.data.username? '':'required field*'
+        let passwordErr=this.state.data.password? '':'required field*'
+        this.setState((prevState)=>{
+            return({
+                error:{
+                    ...prevState.error,
+                    username:usernameErr,
+                    password:passwordErr
+                }
+            })
+        })
+        if (!usernameErr && !passwordErr) {
+            return true
+        } 
+        else{
+            return false
+        }
+    }
+    handleSubmit(e){
+        e.preventDefault()  
+        const isValid=this.validateform();
+        if(!isValid){
+            return;
+        }
+        console.log("this.state>>",this.state) 
+        this.setState({
+            isSubmitting:true
+        })
+        setTimeout(() =>{
+            this.setState({
+                isSubmitting:false
+            }) 
+        },3000); 
+    }
+    render(){
+        console.log("render at second")
+        return(
+            <div>
+                <div className="container">login page</div>
+                <form className="form-group container" onSubmit={this.handleSubmit.bind(this)}>
+                    <label htmlFor="username">enter username</label>
+                    <input name="username" type="text" placeholder="enter username" onChange={this.handleChange} className="form-control"></input>
+                    <p className="error">{this.state.error.username}</p>
+                    <label htmlFor="password">enter password</label>
+                    <input name="password" type="password" placeholder="enter password" onChange={this.handleChange} className="form-control"></input>
+                    <p className="error">{this.state.error.password}</p>
+                    <input name="remember_me" type="checkbox" onChange={this.handleChange}/>
+                    <label>&nbsp;remember me</label>
+                    <hr/>     
+                    <Submitbtn enabledlabel="login" disabledlabel="logging in...." issubmitting={this.state.isSubmitting}></Submitbtn>             
+                </form>
+            </div>
+        )
+    }
+}

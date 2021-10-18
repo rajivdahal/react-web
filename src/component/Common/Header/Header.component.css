@@ -1,0 +1,14 @@
+.nav_bar{
+ 
+ width: 100%;
+ background-color: orange;
+}
+.nav_item{
+display: flex;
+justify-content: space-around;
+padding: 10px;
+}
+.nav_list{
+list-style: none;
+color: white;
+}
