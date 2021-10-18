@@ -10,8 +10,8 @@ export const App=(args)=>{
         <div>
         <Header></Header>
         <div id="login"></div>
-        <Login></Login>
-        {/* <RegisterComponent></RegisterComponent> */}
+        {/* <Login></Login> */}
+        <RegisterComponent></RegisterComponent>
 
         </div>
     )
