@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { Submitbtn } from '../../Common/Submitbtn/Submitbtn.component';
 import {Link} from "react-router-dom"
+// import { toast } from 'react-toastify'; //bad practice
+
+import { notify } from '../../../utils/notify';
+
 
 const defaultForm = {
     name: '',
@@ -117,6 +121,13 @@ export class RegisterComponent extends Component {
         e.preventDefault();
         // API call
         // data is is state's data
+        // toast.info("registration in progress") //bad practice
+        notify.Progressnotification("in progress")
+        setTimeout(()=>{
+        // toast.success("registration successful") //bad practice
+        notify.Successnotification("registration successful")
+        },3000)
+
     }
 
     render() {
