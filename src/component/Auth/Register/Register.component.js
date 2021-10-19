@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Submitbtn } from '../../Common/Submitbtn/Submitbtn.component';
+import {Link} from "react-router-dom"
 
 const defaultForm = {
     name: '',
@@ -161,7 +162,7 @@ export class RegisterComponent extends Component {
                     ></Submitbtn>
                 </form>
                 <p>Already Registered?</p>
-                <p>Back to <a href="/login">LOGIN</a></p>
+                <p>Back to <Link to="/login">LOGIN</Link></p>
             </div>
         )
     }

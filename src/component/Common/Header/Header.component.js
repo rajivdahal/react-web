@@ -1,23 +1,37 @@
 import React from "react";
 import './Header.component.css'
-export const Header=(props)=>{
+import {NavLink,withRouter} from "react-router-dom"
+const logout=(props)=>{
+    console.log("logout clicked")
+   props.push("/login")
+   localStorage.clear()
+}
+//here no export coz you need to redirect to login page on logout button trigger : possible through :history.push ->only found in props
+//i.e props.history.push but no props in this component since not inside Route : so withrouter provides all history,location,match
+//as imported above and you need to wrap the component in withrouter and export by the naming convention as exportd below
+
+const Headercomponent=(props)=>{
+    console.log("props in header",props)
     //incoming props
     let content=props.isLoggedIn?
     <ul className="nav_item">
-    <li className="nav_list">Home</li>
-    <li className="nav_list">About</li>
-    <li className="nav_list">Contact</li>
-    <li className="nav_list">About Us</li>
-    <li className="nav_list">Help</li>
-    <li className="nav_list">Settings</li>
-    <li className="nav_list">Logout</li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">Home</NavLink> </li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/help">help</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/setting">setting</NavLink></li>
+    <li className="nav_list">
+        <div className="logout_btn">
+        <button className="btn btn-success" onClick={()=>{logout(props.history)}}>Logout</button>{/*to redirect to login p age pass argument only through function not directly with logout(args)  */}
+        </div>
+    </li>
 
 </ul>:
     <ul className="nav_item">
-    <li className="nav_list">Home</li>
-    <li className="nav_list">About</li>
-    <li className="nav_list">Contact</li>
-    <li className="nav_list">Log In</li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">Home</NavLink> </li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/login">login</NavLink></li>
 
 </ul>
     return(
@@ -26,3 +40,5 @@ export const Header=(props)=>{
         </div>
     )
 }
+export const Header = withRouter(Headercomponent)
+//this withrouter supplies the history props for redirecting to login page while clicking logout button

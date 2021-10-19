@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Submitbtn } from "../../Common/Submitbtn/Submitbtn.component";
+import { Link } from "react-router-dom";
 import './Login.Component.css'
 const DefaultForm={
     username:'',
@@ -20,7 +21,18 @@ export class Login extends Component{
             isValidForm:false,
         }
         console.log("at first constructor")
+        
        
+    }
+    componentDidMount(){
+        let remember_me=localStorage.getItem('remember_me')
+        if(remember_me==='true'){
+            this.props.history.push("")
+            console.log("you are logged in and redirected to homepage")
+        }
+        else{
+            console.log("redirection not working")
+        }
     }
 
     handleChange=(e)=>{
@@ -75,16 +87,31 @@ export class Login extends Component{
             isSubmitting:true
         })
         setTimeout(() =>{
-            this.setState({
-                isSubmitting:false
-            }) 
+            //illustration for react router-history and location
+            // console.log(this.props)
+            //class component has automatic props as argument
+            // this.props.history.push("")
+            //don't use / while pushing
+            // this.props.history.push({
+            //    pathname:"",
+            //     value:"hello rajiv you can put any name and value here and this is data to send while redirecting",
+            // }) 
+
+            //illustration for react router- match
+            this.props.history.push({
+                pathname:"setting/random-link",
+                value:"hello"
+            })
+            localStorage.setItem('remember_me',this.state.remember_me)
+            localStorage.setItem('username',this.state.data.username)
+            
         },3000); 
     }
     render(){
         console.log("render at second")
         return(
-            <div>
-                <div className="container">login page</div>
+            <div className="container">
+                <div >login page</div>
                 <form className="form-group container" onSubmit={this.handleSubmit.bind(this)}>
                     <label htmlFor="username">enter username</label>
                     <input name="username" type="text" placeholder="enter username" onChange={this.handleChange} className="form-control"></input>
@@ -97,6 +124,13 @@ export class Login extends Component{
                     <hr/>     
                     <Submitbtn enabledlabel="login" disabledlabel="logging in...." issubmitting={this.state.isSubmitting}></Submitbtn>             
                 </form>
+                <div className="login_footer">
+                    <div>
+                        <p>not registered?</p>
+                        <p>register<Link to="/register">Here</Link></p>
+                    </div>
+                        <p><Link to="/forgorpassword">Forgot password?</Link></p>
+                </div>
             </div>
         )
     }
