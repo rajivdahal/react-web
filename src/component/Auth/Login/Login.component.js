@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Submitbtn } from "../../Common/Submitbtn/Submitbtn.component";
 import { Link } from "react-router-dom";
 import './Login.Component.css'
+import { notify } from "../../../utils/notify";
 const DefaultForm={
     username:'',
     password:'',
@@ -104,6 +105,7 @@ export class Login extends Component{
             })
             localStorage.setItem('remember_me',this.state.remember_me)
             localStorage.setItem('username',this.state.data.username)
+            notify.Successnotification("login successful")
             
         },3000); 
     }

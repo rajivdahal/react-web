@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import { Submitbtn } from '../../Common/Submitbtn/Submitbtn.component';
 import {Link} from "react-router-dom"
 // import { toast } from 'react-toastify'; //bad practice
+import axios from "axios"
 
 import { notify } from '../../../utils/notify';
+
+const BASE_URL="http://localhost:4040/api"
 
 
 const defaultForm = {
@@ -119,14 +122,33 @@ export class RegisterComponent extends Component {
 
     handleSubmit = e => {
         e.preventDefault();
+        axios.post(`${BASE_URL}/auth/register`,this.state,{
+            headers:{
+                'Content-Type':'application/json'
+            },
+            params:{},
+            timeout:10000,
+            timeoutErrorMessage:"something went wrong",
+            responseType:'json'
+
+        }       
+            )
+            .then(response=>{
+                console.log("response is",response)
+            })
+            .catch(err=>{
+                console.log("error mseessage is",err)
+            })
+
+
         // API call
         // data is is state's data
         // toast.info("registration in progress") //bad practice
-        notify.Progressnotification("in progress")
-        setTimeout(()=>{
-        // toast.success("registration successful") //bad practice
-        notify.Successnotification("registration successful")
-        },3000)
+        // notify.Progressnotification("in progress") //good practice
+        // setTimeout(()=>{
+        // // toast.success("registration successful") //bad practice
+        // // notify.Successnotification("registration successful") //good practice
+        // },3000)
 
     }
 

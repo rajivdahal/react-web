@@ -1,0 +1,130 @@
+information for routing of react
+while clicking in each div. of navbar  <Navlink> is best as it has custom css property activeclassName-"something" and in 
+each click it will focus on that part by applying the css that you have applied
+
+<NavLink activeClassName="activeclass" exact to="/">Home</NavLink>
+
+upto here you have successfully routed the pages 
+but not routed the 404 error page if it is not present
+ 
+404 page is common to everyone so inside common folder make pagenotfound folder and inside it pagenotfound.component.js
+
+inside the file render some text and image as not found look into the pagenotfound js file
+images are always stored inside public ->images
+later imaged are fetched from publicurl but at present load image from src({"})
+
+now load pagenotfound component in app.routing.js without 
+ <Route component={Pagenotfound}></Route>
+
+ but the problem here is no specific routing gurd like 'exact' are present  so will load pagenotfound will display each and evry time
+ other coponents loads but we need specifically one component at a time 
+ so we use switch-> like switch statement guards by displaying page one at a time routing switch will do the same load one page at a time
+
+        <BrowserRouter>
+        <Header isLoggedIn={true}></Header>
+            <Switch>
+                <Route exact path="/setting/:name" component={setting}></Route>
+                <Route exact path="/help" component={help}></Route>
+                <Route component={Pagenotfound}></Route>
+            </Switch>
+        </BrowserRouter>
+
+ now if you type any unknown url it will guide you to 404 error page
+
+now you want logout button to be functional: if you press logout button it should redirect to login page
+this is possible from:History,location and match of routing component
+ <button className="btn btn-success" onClick={logout()}>Logout</button>
+header is inside browserrouter not inside route, so history match and location won't be present you must pass it through argument
+
+so from react-routerdom fetch withrouter
+and export the header component by  wrapping with withrouter
+import {NavLink,withRouter} from "react-router-dom"
+
+header component
+
+export const Header = withRouter(Headercomponent)
+
+by doing so in prop of header history,location and match came
+
+now you can pass argument as props.history by only giving history and the argument is passed from a function
+<button className="btn btn-success" onClick={()=>{logout(props.history)}}>Logout</button>
+
+in a function history.push("/login") to login when logout is clicked
+
+const logout=(props)=>{
+    console.log("logout clicked")
+   props.push("/login")
+   localStorage.clear()
+
+}
+localstorage.clear() is a function to clear the credentials stored after login
+
+now in login once api is called i.e pressed login in local storage store
+1. token
+2. user information
+3.store remember me as well
+
+
+in login after api is call 
+   localStorage.setItem('remember_me',this.state.remember_me)
+            localStorage.setItem('username',this.state.data.username)
+you can see inside handlesubmit and settimeout of login component
+
+and whenever the login component has load first check whether user is logged in or not if yes send to the homepage else show login
+page
+    componentDidMount(){
+        let remember_me=localStorage.getItem('remember_me')
+        if(remember_me==='true'){
+            this.props.history.push("")
+            console.log("you are logged in and redirected to homepage")
+        }
+        else{
+            console.log("redirection not working")
+        }
+    }
+
+now whenever the user is logged in you need notification bar for showing user is successfully logged in 
+so search for awesome react- in github 
+for notification show toast message notification
+
+external utility and other items must be placed in seperate folder: such type of utility are first inported in seperate folder
+and exported as function for different actions such as showsuccessmessage,showerrormessage and the codebase i.e login or register 
+will import the function exported from utility so that scalable project is maintained, In near future if we want to change the 
+library than we can change and replace the code of utility section only not other
+
+probem statement: we want to show success notification after login is successful and during api call of registration 
+registration in progress
+
+in login 
+import { notify } from "../../../utils/notify";
+and after clicking submit button
+
+ notify.Successnotification("login successful")
+
+ while the utility section is
+
+
+ import { toast } from "react-toastify";
+
+const Successnotification=(msg)=>{
+    toast.success(msg)
+}
+const Progressnotification=(msg)=>{
+    toast.info(msg)
+}
+const Rejectnotification=(msg)=>{
+    toast.error(msg)
+}
+const Warningnotification=(msg)=>{
+    toast.warn(msg)
+}
+
+export const notify={
+    Successnotification,
+    Progressnotification,
+    Rejectnotification,
+    Warningnotification
+}
+
+
+
