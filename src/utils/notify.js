@@ -6,7 +6,7 @@ const Successnotification=(msg)=>{
 const Progressnotification=(msg)=>{
     toast.info(msg)
 }
-const Rejectnotification=(msg)=>{
+const Errornotification=(msg)=>{
     toast.error(msg)
 }
 const Warningnotification=(msg)=>{
@@ -16,6 +16,6 @@ const Warningnotification=(msg)=>{
 export const notify={
     Successnotification,
     Progressnotification,
-    Rejectnotification,
+    Errornotification,
     Warningnotification
 }

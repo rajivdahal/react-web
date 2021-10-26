@@ -1,130 +1,122 @@
-information for routing of react
-while clicking in each div. of navbar  <Navlink> is best as it has custom css property activeclassName-"something" and in 
-each click it will focus on that part by applying the css that you have applied
+HTTP client
 
-<NavLink activeClassName="activeclass" exact to="/">Home</NavLink>
+you can use fetch api also but axios is widely used library and it is the http client so install axios first
 
-upto here you have successfully routed the pages 
-but not routed the 404 error page if it is not present
- 
-404 page is common to everyone so inside common folder make pagenotfound folder and inside it pagenotfound.component.js
+axios format with all parameters are
 
-inside the file render some text and image as not found look into the pagenotfound js file
-images are always stored inside public ->images
-later imaged are fetched from publicurl but at present load image from src({"})
+this.state is data 
+ axios.post(`${BASE_URL}/auth/register`,this.state,{
+            headers:{
+                'Content-Type':'application/json'
+            },
+            params:{},
+            timeout:10000,
+            timeoutErrorMessage:"something went wrong",
+            responseType:'json'
+        }       
+            )
+            .then(response=>{
+                console.log("response is",response)
+            })
+            .catch(err=>{
+                console.log("error mseessage is",err)
+            })
 
-now load pagenotfound component in app.routing.js without 
- <Route component={Pagenotfound}></Route>
+1.fixing cors issue using cors library
+app.use(cors())
+2. registration successful and handling the response via toast message and redirecting to login page 
+you  need a parser in server
+app.use(express.json()) -->for parsing the data from react form
 
- but the problem here is no specific routing gurd like 'exact' are present  so will load pagenotfound will display each and evry time
- other coponents loads but we need specifically one component at a time 
- so we use switch-> like switch statement guards by displaying page one at a time routing switch will do the same load one page at a time
+3. setting issubmitting:true in register page coz no register botton is disabled during api fetch and setting it false after
+handling the response
+4.maintaining the connection url in  .env file
+  in root directory .env file 
+  assign base url to fetch from api
+    REACT_APP_BASE_URL="http://localhost:4000"
 
-        <BrowserRouter>
-        <Header isLoggedIn={true}></Header>
-            <Switch>
-                <Route exact path="/setting/:name" component={setting}></Route>
-                <Route exact path="/help" component={help}></Route>
-                <Route component={Pagenotfound}></Route>
-            </Switch>
-        </BrowserRouter>
+  while creating .env to perform work effectively restart the app
+  and always write the name statrting with REACT_APP_.......  
 
- now if you type any unknown url it will guide you to 404 error page
+5. logging in the form with random data but success message, error from error handling middleware of server is seen also the succss is seen in front end
+  go to preview of network tab to see server's response
 
-now you want logout button to be functional: if you press logout button it should redirect to login page
-this is possible from:History,location and match of routing component
- <button className="btn btn-success" onClick={logout()}>Logout</button>
-header is inside browserrouter not inside route, so history match and location won't be present you must pass it through argument
+6. but the same response you will see in then block of promise: why then ? invalid username and password should be in catch but why then?
+ coz the status code is 200 after hitting api and successfully getting response from  server 
+but the thing is status code must be of error 400 not 200,
+this is the responsibility of backend developer to solve this issue
 
-so from react-routerdom fetch withrouter
-and export the header component by  wrapping with withrouter
-import {NavLink,withRouter} from "react-router-dom"
+fix this issue by setting res.status(err.stats || 400) along with res.json or any other mesage in backeend error handling middleware
 
-header component
+in front end not catch block is exececuted still after consoling err it won't be shown
+console.log(err.response)----> this will console the error message
 
-export const Header = withRouter(Headercomponent)
+7. the error will come but the error message is not always shown inside catch block rather it is managed and seperated
+from catch block errorhandler is call by passing error as argument
 
-by doing so in prop of header history,location and match came
+ .catch(err=>{
+                errorHandler(err) // here err is passed
+                this.setState({
+                    issubmitting: false
+                })
+            })
 
-now you can pass argument as props.history by only giving history and the argument is passed from a function
-<button className="btn btn-success" onClick={()=>{logout(props.history)}}>Logout</button>
+ inside error handler notify mss is shown
+ import {notify} from './notify'
+export const errorHandler=(error)=>{
+    let customErrMessage="something went wrong"
+    
+    let err=error.response
+    let errmsg=err.data.msg3.msg
+    notify.Errornotification(errmsg||customErrMessage)
+}           
 
-in a function history.push("/login") to login when logout is clicked
-
-const logout=(props)=>{
-    console.log("logout clicked")
-   props.push("/login")
-   localStorage.clear()
-
-}
-localstorage.clear() is a function to clear the credentials stored after login
-
-now in login once api is called i.e pressed login in local storage store
-1. token
-2. user information
-3.store remember me as well
+ error handler is placed inside utils folder
+ inside utils:->error.handler.js
 
 
-in login after api is call 
-   localStorage.setItem('remember_me',this.state.remember_me)
-            localStorage.setItem('username',this.state.data.username)
-you can see inside handlesubmit and settimeout of login component
+ 8. redirection services maintaining in different file
+ you need redirection services in different cases like after login you need to redirect to dashboard: if it is admin redirect to 
+ admin dashboard,if it is normal user redirect to dashboard 
+ so different cases are maintained and in other case also you need to have redirection services if register happens redirect to
+ login thus redirection component is made in services folder and calls it when requires
 
-and whenever the login component has load first check whether user is logged in or not if yes send to the homepage else show login
-page
-    componentDidMount(){
-        let remember_me=localStorage.getItem('remember_me')
-        if(remember_me==='true'){
-            this.props.history.push("")
-            console.log("you are logged in and redirected to homepage")
-        }
-        else{
-            console.log("redirection not working")
-        }
+ for login successful and redirecting to another page you need to pass 2 args: 1->role 2.history to use push
+ so after login is successful you need to store token user info and remember me case in local storage for future use
+ if remember me is set true when entering to login page you will automatically enter to his dashboard that logic is written in login
+ componen_> go and have a look
+  .then(response=>{
+                console.log(response)
+                notify.Successnotification('welcome'+`${response.data.user.name}`)
+                localStorage.setItem('token',response.data.token)
+                localStorage.setItem('user',response.data.user)
+                localStorage.setItem('remember_me',this.state.remember_me)
+                redirection(response.data.user.role,this.props.history)
+                this.setState({
+                    issubmitting: false
+                })
+                
+            })
+
+redirection has
+
+
+export const redirection = (role, history) => {
+    let reditectpath = ''
+    switch (role) {
+        case 1:
+            reditectpath = 'admin'
+            break;
+        case 1:
+            reditectpath = 'dashboard'
+            break;
+
+        default:
+            break;
     }
-
-now whenever the user is logged in you need notification bar for showing user is successfully logged in 
-so search for awesome react- in github 
-for notification show toast message notification
-
-external utility and other items must be placed in seperate folder: such type of utility are first inported in seperate folder
-and exported as function for different actions such as showsuccessmessage,showerrormessage and the codebase i.e login or register 
-will import the function exported from utility so that scalable project is maintained, In near future if we want to change the 
-library than we can change and replace the code of utility section only not other
-
-probem statement: we want to show success notification after login is successful and during api call of registration 
-registration in progress
-
-in login 
-import { notify } from "../../../utils/notify";
-and after clicking submit button
-
- notify.Successnotification("login successful")
-
- while the utility section is
+    history.push(reditectpath)
 
 
- import { toast } from "react-toastify";
-
-const Successnotification=(msg)=>{
-    toast.success(msg)
 }
-const Progressnotification=(msg)=>{
-    toast.info(msg)
-}
-const Rejectnotification=(msg)=>{
-    toast.error(msg)
-}
-const Warningnotification=(msg)=>{
-    toast.warn(msg)
-}
-
-export const notify={
-    Successnotification,
-    Progressnotification,
-    Rejectnotification,
-    Warningnotification
-}
-
 
 

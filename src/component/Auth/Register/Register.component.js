@@ -6,7 +6,7 @@ import axios from "axios"
 
 import { notify } from '../../../utils/notify';
 
-const BASE_URL="http://localhost:4040/api"
+const BASE_URL="http://localhost:4000"
 
 
 const defaultForm = {
@@ -122,22 +122,29 @@ export class RegisterComponent extends Component {
 
     handleSubmit = e => {
         e.preventDefault();
-        axios.post(`${BASE_URL}/auth/register`,this.state,{
+        this.setState({
+            isSubmitting: true
+        })
+        console.log("data are",this.state.data)
+        notify.Progressnotification("registration in progress")
+        axios.post(`${BASE_URL}/auth/register`,this.state.data,{
             headers:{
                 'Content-Type':'application/json'
             },
             params:{},
             timeout:10000,
             timeoutErrorMessage:"something went wrong",
-            responseType:'json'
-
         }       
             )
             .then(response=>{
-                console.log("response is",response)
+                notify.Successnotification("registration successful please login")
+                this.props.history.push('/login')
             })
             .catch(err=>{
-                console.log("error mseessage is",err)
+                console.log("error in registration",err.response)
+                this.setState({
+                    isSubmitting:false
+                })
             })
 
 

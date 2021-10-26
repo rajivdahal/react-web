@@ -44,7 +44,6 @@ export const Approuting=(props)=>{
                 <Route exact path="/help" component={help}></Route>
                 <Route component={Pagenotfound}></Route>
             </Switch>
-
         </BrowserRouter>
     )
 }
