@@ -6,6 +6,7 @@ import { notify } from "../../../utils/notify";
 import axios from "axios";
 import { errorHandler } from "../../../utils/err.handler";
 import { redirection } from "../../../services/redirection";
+import {httpClient} from './../../../utils/httpClient'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 const DefaultForm = {
     username: '',
@@ -91,12 +92,7 @@ export class Login extends Component {
         this.setState({
             issubmitting: true
         })
-        axios.post(`${BASE_URL}/auth/login`, this.state.data,
-            {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
+        httpClient.POST(`/auth/login`, this.state.data)
             .then(response=>{
                 console.log(response)
                 notify.Successnotification('welcome'+`${response.data.user.name}`)
@@ -106,8 +102,7 @@ export class Login extends Component {
                 redirection(response.data.user.role,this.props.history)
                 this.setState({
                     issubmitting: false
-                })
-                
+                })               
             })
             .catch(err=>{
                 errorHandler(err)

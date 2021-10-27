@@ -4,7 +4,7 @@ export const redirection = (role, history) => {
         case 1:
             reditectpath = 'admin'
             break;
-        case 1:
+        case 2:
             reditectpath = 'dashboard'
             break;
 
@@ -12,6 +12,4 @@ export const redirection = (role, history) => {
             break;
     }
     history.push(reditectpath)
-
-
 }

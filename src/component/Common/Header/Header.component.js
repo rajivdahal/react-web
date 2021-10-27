@@ -15,24 +15,20 @@ const Headercomponent=(props)=>{
     //incoming props
     let content=props.isLoggedIn?
     <ul className="nav_item">
-    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">Home</NavLink> </li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">dashboard</NavLink> </li>
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/help">help</NavLink></li>
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/setting">setting</NavLink></li>
     <li className="nav_list">
         <div className="logout_btn">
         <button className="btn btn-success" onClick={()=>{logout(props.history)}}>Logout</button>{/*to redirect to login p age pass argument only through function not directly with logout(args)  */}
         </div>
     </li>
-
 </ul>:
     <ul className="nav_item">
     <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">Home</NavLink> </li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/login">login</NavLink></li>
-
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/register">Register</NavLink></li>
 </ul>
     return(
         <div className="nav_bar container">

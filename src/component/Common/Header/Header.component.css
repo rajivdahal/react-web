@@ -2,6 +2,7 @@
  
  width: 100%;
  background-color: orange;
+ min-height: 58px;
 }
 .nav_item{
 display: flex;

@@ -5,6 +5,7 @@ import {Link} from "react-router-dom"
 import axios from "axios"
 
 import { notify } from '../../../utils/notify';
+import { httpClient } from '../../../utils/httpClient';
 
 const BASE_URL="http://localhost:4000"
 
@@ -127,15 +128,7 @@ export class RegisterComponent extends Component {
         })
         console.log("data are",this.state.data)
         notify.Progressnotification("registration in progress")
-        axios.post(`${BASE_URL}/auth/register`,this.state.data,{
-            headers:{
-                'Content-Type':'application/json'
-            },
-            params:{},
-            timeout:10000,
-            timeoutErrorMessage:"something went wrong",
-        }       
-            )
+        httpClient.POST(`/auth/register`,this.state.data)      
             .then(response=>{
                 notify.Successnotification("registration successful please login")
                 this.props.history.push('/login')

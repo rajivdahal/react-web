@@ -1,122 +1,173 @@
-HTTP client
+handling axios in a common file
 
-you can use fetch api also but axios is widely used library and it is the http client so install axios first
+place this code in seperate file
 
-axios format with all parameters are
+utils->err.handler.js
+import axios from "axios";
 
-this.state is data 
- axios.post(`${BASE_URL}/auth/register`,this.state,{
-            headers:{
-                'Content-Type':'application/json'
-            },
-            params:{},
-            timeout:10000,
-            timeoutErrorMessage:"something went wrong",
-            responseType:'json'
-        }       
-            )
-            .then(response=>{
-                console.log("response is",response)
-            })
-            .catch(err=>{
-                console.log("error mseessage is",err)
-            })
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
-1.fixing cors issue using cors library
-app.use(cors())
-2. registration successful and handling the response via toast message and redirecting to login page 
-you  need a parser in server
-app.use(express.json()) -->for parsing the data from react form
+const http = axios.create({
+    baseURL: BASE_URL,
+    responseType: 'json',
+    timeout: 20000,
+    timeoutErrorMessage: "request Timeout"
+})
 
-3. setting issubmitting:true in register page coz no register botton is disabled during api fetch and setting it false after
-handling the response
-4.maintaining the connection url in  .env file
-  in root directory .env file 
-  assign base url to fetch from api
-    REACT_APP_BASE_URL="http://localhost:4000"
-
-  while creating .env to perform work effectively restart the app
-  and always write the name statrting with REACT_APP_.......  
-
-5. logging in the form with random data but success message, error from error handling middleware of server is seen also the succss is seen in front end
-  go to preview of network tab to see server's response
-
-6. but the same response you will see in then block of promise: why then ? invalid username and password should be in catch but why then?
- coz the status code is 200 after hitting api and successfully getting response from  server 
-but the thing is status code must be of error 400 not 200,
-this is the responsibility of backend developer to solve this issue
-
-fix this issue by setting res.status(err.stats || 400) along with res.json or any other mesage in backeend error handling middleware
-
-in front end not catch block is exececuted still after consoling err it won't be shown
-console.log(err.response)----> this will console the error message
-
-7. the error will come but the error message is not always shown inside catch block rather it is managed and seperated
-from catch block errorhandler is call by passing error as argument
-
- .catch(err=>{
-                errorHandler(err) // here err is passed
-                this.setState({
-                    issubmitting: false
-                })
-            })
-
- inside error handler notify mss is shown
- import {notify} from './notify'
-export const errorHandler=(error)=>{
-    let customErrMessage="something went wrong"
-    
-    let err=error.response
-    let errmsg=err.data.msg3.msg
-    notify.Errornotification(errmsg||customErrMessage)
-}           
-
- error handler is placed inside utils folder
- inside utils:->error.handler.js
-
-
- 8. redirection services maintaining in different file
- you need redirection services in different cases like after login you need to redirect to dashboard: if it is admin redirect to 
- admin dashboard,if it is normal user redirect to dashboard 
- so different cases are maintained and in other case also you need to have redirection services if register happens redirect to
- login thus redirection component is made in services folder and calls it when requires
-
- for login successful and redirecting to another page you need to pass 2 args: 1->role 2.history to use push
- so after login is successful you need to store token user info and remember me case in local storage for future use
- if remember me is set true when entering to login page you will automatically enter to his dashboard that logic is written in login
- componen_> go and have a look
-  .then(response=>{
-                console.log(response)
-                notify.Successnotification('welcome'+`${response.data.user.name}`)
-                localStorage.setItem('token',response.data.token)
-                localStorage.setItem('user',response.data.user)
-                localStorage.setItem('remember_me',this.state.remember_me)
-                redirection(response.data.user.role,this.props.history)
-                this.setState({
-                    issubmitting: false
-                })
-                
-            })
-
-redirection has
-
-
-export const redirection = (role, history) => {
-    let reditectpath = ''
-    switch (role) {
-        case 1:
-            reditectpath = 'admin'
-            break;
-        case 1:
-            reditectpath = 'dashboard'
-            break;
-
-        default:
-            break;
+const getheaders=()=>{
+    let options = {
+        'Content-Type': 'application/json'
     }
-    history.push(reditectpath)
-
+    return options;
 
 }
 
+const GET = (url, params = {}) => {
+    return http.get(
+        url,
+        {
+        headers: getheaders(),
+        params
+        }
+    )
+}
 
+const POST=(url,data,params={})=>{
+    return http.post(url,data,{
+        
+            headers:getheaders(),
+            params
+        
+    })
+}
+const PUT=(url,data,params={})=>{
+    return http.put(url,data,{
+        headers:getheaders(),
+        params
+    })
+}
+
+const DELETE=(url,data,params={})=>{
+    return http.delete(url,data,{
+        headers:{
+            headers:getheaders(),
+            params
+        }
+    })
+}
+export const httpClient ={
+    GET,
+    POST,
+    PUT,
+    DELETE
+}
+
+call a httpClient where you require axios 
+i.e.
+        httpCLient.post(`${BASE_URL}/auth/login`, this.state.data,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+
+
+replaced by
+import {httpClient} from './../../../utils/httpClient'
+
+httpClient.POST(`/auth/login`, this.state.data)
+
+
+do this same for register also
+
+
+
+
+PROTECTED ROUTES concept
+the problem is you go to dashboard of respective user by logging in but after doing logout in browser whenever you click back you will
+again see the same dashboard, rather you should redirect to login page after doing logout insted going to dashboard
+
+so the concept of protected routes came: you will protect dashboard in protected route 
+i.e
+
+                <ProtectedRoute exact path="/dashboard" component={dashboard}></ProtectedRoute>
+insted of 
+                <Route exact path="/dashboard" component={dashboard}></Route>
+
+<ProtectedRoute /> is a function of syntax:
+
+component of <Route> and {component:Component} the key of object is same else you will get error{object destructuring concept}
+
+
+const ProtectedRoute = ({ component: Component, ...rest }) => {
+    return (
+        <Route {...rest} render={(routeProps) => {
+             return (logic) 
+        }}></Route>
+    )
+}
+
+
+
+the logic is: you will show dashboard if the user is logged in
+i.e. localStorage.getitem('token')?(show the component i.e dashboard):redirect to login page
+
+
+import {Redirect} from 'react-router-dom
+const ProtectedRoute = ({ component: Component, ...rest }) => {
+    return (
+        <Route {...rest} render={(routeProps) => {
+             return localStorage.getItem('token')
+                ? <Component {...routeProps}></Component>
+                : <Redirect to="/"></Redirect>
+
+        }}></Route>
+    )
+}
+
+this will prevent from loading dashboard even after hitting the /dashboard to the url if got token will redirect else to login page
+
+now make a navbar seperate 
+logged out navbar will have 
+    <ul className="nav_item">
+    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">Home</NavLink> </li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/login">login</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/register">Register</NavLink></li>
+
+but logged in will have
+
+    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">dashboard</NavLink> </li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/setting">setting</NavLink></li>
+
+and the log in and logged out is identified by fetching token from the localStorage
+
+
+const Headercomponent=(props)=>{
+    console.log("props in header",props)
+    //incoming props
+    let content=props.isLoggedIn? ///here is the logic
+    <ul className="nav_item">
+    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">dashboard</NavLink> </li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/setting">setting</NavLink></li>
+    <li className="nav_list">
+        <div className="logout_btn">
+        <button className="btn btn-success" onClick={()=>{logout(props.history)}}>Logout</button>{/*to redirect to login p age pass argument only through function not directly with logout(args)  */}
+        </div>
+    </li>
+</ul>:
+    <ul className="nav_item">
+    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">Home</NavLink> </li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/login">login</NavLink></li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" to="/register">Register</NavLink></li>
+</ul>
+
+
+
+
+problem:
+the page won't reload immediately to show the logout navbar even after logged in
+and vice versa
