@@ -1,8 +1,11 @@
 .nav_bar{
- 
  width: 100%;
- background-color: orange;
- min-height: 58px;
+ background-color: #ffa500;
+ position: absolute;
+ left: 5%;
+ height: 58px;
+ top: 0px;
+ overflow: hidden;
 }
 .nav_item{
 display: flex;

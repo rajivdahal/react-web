@@ -10,8 +10,21 @@ const http = axios.create({
 })
 
 const getheaders=()=>{
+    debugger
+    const token=localStorage.getItem('token')
+    let istokenavailable
+    if(token){
+         istokenavailable=true
+    }
+    else{
+         istokenavailable=false
+    }
     let options = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+
+    }
+    if(istokenavailable){
+        options['Authorization']=`Bearer ${token}`
     }
     return options;
 

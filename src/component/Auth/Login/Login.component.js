@@ -135,8 +135,8 @@ export class Login extends Component {
     render() {
         console.log("render at second")
         return (
-            <div className="container">
-                <div >login page</div>
+            <div className="container login_form">
+                <h2 >login page</h2>
                 <form className="form-group container" onSubmit={this.handleSubmit.bind(this)}>
                     <label htmlFor="username">enter username</label>
                     <input name="username" type="text" placeholder="enter username" onChange={this.handleChange} className="form-control"></input>

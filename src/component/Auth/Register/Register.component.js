@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Submitbtn } from '../../Common/Submitbtn/Submitbtn.component';
 import {Link} from "react-router-dom"
 // import { toast } from 'react-toastify'; //bad practice
+import './Register.component.css'
 import axios from "axios"
 
 import { notify } from '../../../utils/notify';
@@ -155,7 +156,7 @@ export class RegisterComponent extends Component {
     render() {
         const { error } = this.state;
         return (
-            <div className="container">
+            <div className="container register_form">
                 <h2>Register</h2>
                 <p>Please Register to continue</p>
                 <form className="form-group" onSubmit={this.handleSubmit} noValidate>

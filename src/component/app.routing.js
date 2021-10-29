@@ -4,6 +4,8 @@ import { RegisterComponent } from "./Auth/Register/Register.component";
 import { Header } from "./Common/Header/Header.component";
 import { Pagenotfound } from "./Common/Pagenotfound/Pagenotfound.component";
 import { dashboard } from "./Users/dashboard/dashboard.component";
+import { Sidebar } from "./Common/Sidebar/sidebar.component";
+import Addproduct from "./Products/addproduct/addproduct.component";
 export const Approuting=(props)=>{
     const home=(props)=>{
         console.log("props ib home",props)
@@ -30,24 +32,42 @@ export const Approuting=(props)=>{
         return (
             <Route {...rest} render={(routeProps) => {
                  return localStorage.getItem('token')
-                 ?<Component {...routeProps} ></Component>
+                 ?
+                 <div>
+                 <Header isLoggedIn={true}></Header>
+                 <Sidebar></Sidebar>
+                 <Component {...routeProps} ></Component>
+                 </div>
                  :<Redirect to="/login"></Redirect>
             }}></Route>
         )
     }
+    const PublicRoute = ({ component: Component, ...rest }) => {
+        return (
+            <Route {...rest} render={(routeProps) => {
+                 return (
+                     <div>
+                     <Header></Header>
+                     <Component {...routeProps}></Component>
+                     </div>
+                 )
+            }}></Route>
+        )
+    }
+    
     
     return(
         <BrowserRouter>
-        <Header isLoggedIn={localStorage.getItem('token')?true:false}></Header>
             <Switch>
-                <Route exact path="/login" component={Login}></Route>
-                <Route exact path="/register" component={RegisterComponent}></Route>
-                <Route exact path="/" component={home}></Route>
-                <Route exact path="/about" component={about}></Route>
-                <Route exact path="/contact" component={contact}></Route>
+                <PublicRoute exact path="/login" component={Login}></PublicRoute>
+                <PublicRoute exact path="/register" component={RegisterComponent}></PublicRoute>
+                <PublicRoute exact path="/" component={home}></PublicRoute>
+                <PublicRoute exact path="/about" component={about}></PublicRoute>
+                <PublicRoute exact path="/contact" component={contact}></PublicRoute>
                 <ProtectedRoute exact path="/dashboard" component={dashboard}></ProtectedRoute>
-                <Route exact path="/help" component={help}></Route>
-                <Route component={Pagenotfound}></Route>
+                <ProtectedRoute exact path="/addproduct" component={Addproduct}></ProtectedRoute>
+                <PublicRoute exact path="/help" component={help}></PublicRoute>
+                <PublicRoute component={Pagenotfound}></PublicRoute>
             </Switch>
         </BrowserRouter>
     )

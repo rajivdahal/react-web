@@ -1,173 +1,20 @@
-handling axios in a common file
 
-place this code in seperate file
+ES7 react redux->extension vs code
 
-utils->err.handler.js
-import axios from "axios";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL
-
-const http = axios.create({
-    baseURL: BASE_URL,
-    responseType: 'json',
-    timeout: 20000,
-    timeoutErrorMessage: "request Timeout"
-})
-
-const getheaders=()=>{
-    let options = {
-        'Content-Type': 'application/json'
-    }
-    return options;
-
-}
-
-const GET = (url, params = {}) => {
-    return http.get(
-        url,
-        {
-        headers: getheaders(),
-        params
-        }
-    )
-}
-
-const POST=(url,data,params={})=>{
-    return http.post(url,data,{
-        
-            headers:getheaders(),
-            params
-        
-    })
-}
-const PUT=(url,data,params={})=>{
-    return http.put(url,data,{
-        headers:getheaders(),
-        params
-    })
-}
-
-const DELETE=(url,data,params={})=>{
-    return http.delete(url,data,{
-        headers:{
-            headers:getheaders(),
-            params
-        }
-    })
-}
-export const httpClient ={
-    GET,
-    POST,
-    PUT,
-    DELETE
-}
-
-call a httpClient where you require axios 
-i.e.
-        httpCLient.post(`${BASE_URL}/auth/login`, this.state.data,
-            {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-
-
-replaced by
-import {httpClient} from './../../../utils/httpClient'
-
-httpClient.POST(`/auth/login`, this.state.data)
-
-
-do this same for register also
+rcc for classbased component
+rfc for functional component
+rconst for constructor
 
 
 
+1. make add product component  and render it in the add product section while licking add product
+ function based component
 
-PROTECTED ROUTES concept
-the problem is you go to dashboard of respective user by logging in but after doing logout in browser whenever you click back you will
-again see the same dashboard, rather you should redirect to login page after doing logout insted going to dashboard
+2.make product form by making productform folder and productform.component.js
+ class based component
 
-so the concept of protected routes came: you will protect dashboard in protected route 
-i.e
+3.product form is called because it needs to be reused for edit action also
+and the call back is send as a props and is call to perform api call function
 
-                <ProtectedRoute exact path="/dashboard" component={dashboard}></ProtectedRoute>
-insted of 
-                <Route exact path="/dashboard" component={dashboard}></Route>
-
-<ProtectedRoute /> is a function of syntax:
-
-component of <Route> and {component:Component} the key of object is same else you will get error{object destructuring concept}
-
-
-const ProtectedRoute = ({ component: Component, ...rest }) => {
-    return (
-        <Route {...rest} render={(routeProps) => {
-             return (logic) 
-        }}></Route>
-    )
-}
-
-
-
-the logic is: you will show dashboard if the user is logged in
-i.e. localStorage.getitem('token')?(show the component i.e dashboard):redirect to login page
-
-
-import {Redirect} from 'react-router-dom
-const ProtectedRoute = ({ component: Component, ...rest }) => {
-    return (
-        <Route {...rest} render={(routeProps) => {
-             return localStorage.getItem('token')
-                ? <Component {...routeProps}></Component>
-                : <Redirect to="/"></Redirect>
-
-        }}></Route>
-    )
-}
-
-this will prevent from loading dashboard even after hitting the /dashboard to the url if got token will redirect else to login page
-
-now make a navbar seperate 
-logged out navbar will have 
-    <ul className="nav_item">
-    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">Home</NavLink> </li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/login">login</NavLink></li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/register">Register</NavLink></li>
-
-but logged in will have
-
-    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">dashboard</NavLink> </li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/setting">setting</NavLink></li>
-
-and the log in and logged out is identified by fetching token from the localStorage
-
-
-const Headercomponent=(props)=>{
-    console.log("props in header",props)
-    //incoming props
-    let content=props.isLoggedIn? ///here is the logic
-    <ul className="nav_item">
-    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">dashboard</NavLink> </li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/setting">setting</NavLink></li>
-    <li className="nav_list">
-        <div className="logout_btn">
-        <button className="btn btn-success" onClick={()=>{logout(props.history)}}>Logout</button>{/*to redirect to login p age pass argument only through function not directly with logout(args)  */}
-        </div>
-    </li>
-</ul>:
-    <ul className="nav_item">
-    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">Home</NavLink> </li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/login">login</NavLink></li>
-    <li className="nav_list"><NavLink activeClassName="activeclass" to="/register">Register</NavLink></li>
-</ul>
-
-
-
-
-problem:
-the page won't reload immediately to show the logout navbar even after logged in
-and vice versa
+the main thing is when you call add product api
+you need to set token and is done by issecured method also but i am proceeding by  checking the token using if else condition

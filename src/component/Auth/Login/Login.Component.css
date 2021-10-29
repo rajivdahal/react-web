@@ -5,3 +5,6 @@
     display: flex;
     justify-content: space-between;
 }
+.login_form{
+    margin-top: 80px;
+}

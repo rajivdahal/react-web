@@ -15,7 +15,7 @@ const Headercomponent=(props)=>{
     //incoming props
     let content=props.isLoggedIn?
     <ul className="nav_item">
-    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/">dashboard</NavLink> </li>
+    <li className="nav_list"><NavLink activeClassName="activeclass" exact to="/dashboard">dashboard</NavLink> </li>
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/setting">setting</NavLink></li>
