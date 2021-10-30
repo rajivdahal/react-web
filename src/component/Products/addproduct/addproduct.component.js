@@ -17,12 +17,11 @@ export default class Addproduct extends Component {
         .then(response=>{
             notify.Successnotification("register successful")
             console.log(response)
+            this.props.history.push('/viewproduct')
         })
         .catch(err=>{
             errorHandler(err)
-
         })
-
     }
     render() {
         return (
@@ -33,6 +32,7 @@ export default class Addproduct extends Component {
                 title="add products"
                 description="please add the products to register the products"
                 submitCallback={this.add}
+                
                 ></Productform>
             </div>
         )

@@ -6,6 +6,8 @@ import { Pagenotfound } from "./Common/Pagenotfound/Pagenotfound.component";
 import { dashboard } from "./Users/dashboard/dashboard.component";
 import { Sidebar } from "./Common/Sidebar/sidebar.component";
 import Addproduct from "./Products/addproduct/addproduct.component";
+import viewproducts from "./Products/viewproduct/viewproducts.component";
+import Editproduct from "./Products/editproduct/editproduct.component";
 export const Approuting=(props)=>{
     const home=(props)=>{
         console.log("props ib home",props)
@@ -59,14 +61,16 @@ export const Approuting=(props)=>{
     return(
         <BrowserRouter>
             <Switch>
-                <PublicRoute exact path="/login" component={Login}></PublicRoute>
-                <PublicRoute exact path="/register" component={RegisterComponent}></PublicRoute>
+                <PublicRoute  path="/login" component={Login}></PublicRoute>
+                <PublicRoute  path="/register" component={RegisterComponent}></PublicRoute>
                 <PublicRoute exact path="/" component={home}></PublicRoute>
-                <PublicRoute exact path="/about" component={about}></PublicRoute>
-                <PublicRoute exact path="/contact" component={contact}></PublicRoute>
-                <ProtectedRoute exact path="/dashboard" component={dashboard}></ProtectedRoute>
-                <ProtectedRoute exact path="/addproduct" component={Addproduct}></ProtectedRoute>
-                <PublicRoute exact path="/help" component={help}></PublicRoute>
+                <PublicRoute  path="/about" component={about}></PublicRoute>
+                <PublicRoute  path="/contact" component={contact}></PublicRoute>
+                <ProtectedRoute  path="/dashboard" component={dashboard}></ProtectedRoute>
+                <ProtectedRoute  path="/addproduct" component={Addproduct}></ProtectedRoute>
+                <ProtectedRoute  path="/viewproduct" component={viewproducts}></ProtectedRoute>
+                <ProtectedRoute  path="/editproduct/:id" component={Editproduct}></ProtectedRoute>
+                <PublicRoute  path="/help" component={help}></PublicRoute>
                 <PublicRoute component={Pagenotfound}></PublicRoute>
             </Switch>
         </BrowserRouter>

@@ -3,11 +3,11 @@ import { Submitbtn } from "../../Common/Submitbtn/Submitbtn.component";
 import { Link } from "react-router-dom";
 import './Login.Component.css'
 import { notify } from "../../../utils/notify";
-import axios from "axios";
+// import axios from "axios";
 import { errorHandler } from "../../../utils/err.handler";
 import { redirection } from "../../../services/redirection";
 import {httpClient} from './../../../utils/httpClient'
-const BASE_URL = process.env.REACT_APP_BASE_URL
+// const BASE_URL = process.env.REACT_APP_BASE_URL
 const DefaultForm = {
     username: '',
     password: '',
@@ -95,7 +95,7 @@ export class Login extends Component {
         httpClient.POST(`/auth/login`, this.state.data)
             .then(response=>{
                 console.log(response)
-                notify.Successnotification('welcome'+`${response.data.user.name}`)
+                notify.Successnotification(`welcome ${response.data.user.name}`)
                 localStorage.setItem('token',response.data.token)
                 localStorage.setItem('user',response.data.user)
                 localStorage.setItem('remember_me',this.state.remember_me)

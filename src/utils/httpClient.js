@@ -10,8 +10,8 @@ const http = axios.create({
 })
 
 const getheaders=()=>{
-    debugger
     const token=localStorage.getItem('token')
+    console.log(token)
     let istokenavailable
     if(token){
          istokenavailable=true
@@ -24,7 +24,7 @@ const getheaders=()=>{
 
     }
     if(istokenavailable){
-        options['Authorization']=`Bearer ${token}`
+        options['authorization']=`Bearer ${token}`
     }
     return options;
 
@@ -56,13 +56,15 @@ const PUT=(url,data,params={})=>{
 }
 
 const DELETE=(url,data,params={})=>{
-    return http.delete(url,data,{
-        headers:{
+    
+    return http.delete(url,{
+        
             headers:getheaders(),
             params
-        }
+        
     })
 }
+
 export const httpClient ={
     GET,
     POST,

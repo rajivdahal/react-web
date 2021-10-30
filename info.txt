@@ -18,3 +18,84 @@ and the call back is send as a props and is call to perform api call function
 
 the main thing is when you call add product api
 you need to set token and is done by issecured method also but i am proceeding by  checking the token using if else condition
+
+
+
+viewing the products and deleting the products
+nothing new 
+but the thing is you don't need to send data when delete request is send otherwise it will send an error mesasge
+
+
+make a seperate file for loader so that you can use the loader in other component as well
+
+use debugger to locate the error
+
+edit the products
+the thing is you need to go to editproduct page and show the values of particular id passeed to a form to make editable
+1.make a editproduct folder and component-classbased
+2. inside editproduct
+   componentdidmount
+   get product id by
+  const id= this.props.match.params('id)
+ http get method call
+ make a loader until an api call hasnot been finished
+ console the result
+
+ 3. you are using the same form to add product and edit : to know which is edit flag you place editflag 
+ <productform isedit={true}/>
+and know if the component call is from register or edit 
+
+
+send the object got from get request to productform and process accordingly to show by first saving to the state
+
+when assigning values to the input fields
+ warning triggers
+A component is changing a controlled input to be uncontrolled.
+ This is likely caused by the value changing from a defined to undefined, 
+ which should not happen. Decide between using a controlled or uncontrolled input
+  element for the lifetime of the component. More info:
+
+this is due to the undefined value placed as a value and defined value is undefined :
+when the values are placed in input from the datasets
+so the gist is 
+don't place undefined value in input for showing during productedit
+solution:
+make at least an empty string 
+   componentDidMount(){
+        const {productData}=this.props
+        if(productData){
+            this.setState({
+                data:{
+                    ...defaultForm,
+                    ...productData,
+                    discountedItem:productData.discount && productData.discount.discountedItem
+                    ?productData.discount.discountedItem
+                    :false,
+                    discountType:productData.discount && productData.discount.discountType
+                    ?productData.discount.discountType
+                    :'',
+                    discountValue:productData.discount && productData.discount.discountValue
+                    ?productData.discount.discountValue
+                    :'',
+                    
+
+
+
+                }
+            })
+        }
+    }
+   
+    the setstate is done and value are defined accordingly
+    at least a single string will be there from defaultform by doing ...defaultForm
+
+    the problem again here came is  discounted item chekbox hasn't been shown  even after keeping its value 
+    so to fix logic was made if there is discount in productData and if discounted item is present make discounteditem as the same value
+    from productData
+    and so on
+
+    the data for values were placed from the state
+
+    callback function from editproduct to formdata was sent and put request got hit and redirected to the showproduct page
+
+

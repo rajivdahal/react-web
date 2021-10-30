@@ -3,12 +3,12 @@ import { Submitbtn } from '../../Common/Submitbtn/Submitbtn.component';
 import {Link} from "react-router-dom"
 // import { toast } from 'react-toastify'; //bad practice
 import './Register.component.css'
-import axios from "axios"
+// import axios from "axios"
 
 import { notify } from '../../../utils/notify';
 import { httpClient } from '../../../utils/httpClient';
 
-const BASE_URL="http://localhost:4000"
+// const BASE_URL="http://localhost:4000"
 
 
 const defaultForm = {
