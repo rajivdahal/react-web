@@ -8,12 +8,17 @@ export default class Addproduct extends Component {
         super()
     
         this.state = {
+            isSubmitting:false
              
         }
     }
-    add=(data)=>{
+    add=(data,files)=>{
+        this.setState({
+            isSubmitting:true
+        })
         console.log("here in add prodcut component >>", data)
-        httpClient.POST('/product',data)
+        // httpClient.POST('/product',data)
+        httpClient.UPLOAD('/product',data,files)
         .then(response=>{
             notify.Successnotification("register successful")
             console.log(response)
@@ -21,6 +26,9 @@ export default class Addproduct extends Component {
         })
         .catch(err=>{
             errorHandler(err)
+            this.setState({
+                isSubmitting:false
+            })
         })
     }
     render() {
@@ -29,9 +37,9 @@ export default class Addproduct extends Component {
 
 
                 <Productform
-                title="add products"
-                description="please add the products to register the products"
+
                 submitCallback={this.add}
+                isSubmitting={this.state.isSubmitting}
                 
                 ></Productform>
             </div>

@@ -64,10 +64,46 @@ const DELETE=(url,data,params={})=>{
         
     })
 }
+const UPLOAD = (url, data = {}, files = []) => {
+    return new Promise((resolve, reject) => {
+        // for uploading files we are using xmlhttprequest
+        // we are sending value as formData
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData();
+
+
+        // append files in form data
+        // this will work for single file and multiple
+        files.forEach(item => {
+            formData.append('image', item, item.name)
+        })
+
+        // append textual data in formdata
+        for (let key in data) {
+            formData.append(key, data[key])
+        }
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    resolve(xhr.response)
+                } else {
+                    reject(xhr.response)
+                }
+            }
+        }
+
+        xhr.open('POST', `${BASE_URL}${url}?token=Bearer ${localStorage.getItem('token')}`, true)
+        xhr.send(formData)
+    })
+
+}
+
 
 export const httpClient ={
     GET,
     POST,
     PUT,
-    DELETE
+    DELETE,
+    UPLOAD
 }

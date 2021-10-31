@@ -5,7 +5,9 @@ import { httpClient } from '../../../utils/httpClient'
 import { FaPencilAlt, FaTrash } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { notify } from '../../../utils/notify'
+import { formatDate } from '../../../utils/dateUtils'
 // import Addproduct from '../addproduct/addproduct.component'
+const IMG_URL=process.env.REACT_APP_IMG_URL
 
 export default class viewproducts extends Component {
     constructor() {
@@ -72,8 +74,9 @@ export default class viewproducts extends Component {
                                 <th scope="col">S.No</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Category</th>
-                                <th scope="col">Color</th>
+                                <th scope="col">created at</th>
                                 <th scope="col"> price </th>
+                                <th scope="col"> Image </th>
                                 <th scope="col">action</th>
                             </tr>
                         </thead>
@@ -86,8 +89,9 @@ export default class viewproducts extends Component {
                                             <th scope="row">{index + 1}</th>
                                             <td><Link to={`/productdetails/${item._id}`}>{item.name}</Link></td>
                                             <td>{item.category}</td>
-                                            <td>{item.color}</td>
+                                            <td>{formatDate(item.createdAt,"YYYY:MM:DD hh:mm a")}</td>
                                             <td>{item.price}</td>
+                                            <td> <img src={`${IMG_URL}/${item.images[0]}`} alt="product.png" width="200px"></img> </td>
                                             <td><button onClick={() => this.editproduct(item._id)} title="edit product"><FaPencilAlt /></button> <button onClick={() => this.removeproduct(item._id, index)} title="delete product"><FaTrash /></button></td>
                                         </tr>
                                     )

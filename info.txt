@@ -1,101 +1,95 @@
+1. make discounttype select and option
+2.make the date readable and show created at 
+ for this date utils-> file is made and formatted in table-> to show created at date
+  to use :
+  formatdate(item.createdat,'ddd YYYY/MM/DD)
+  formatdate is a function called from utility component folder 
+  to get time only
+  formatdate(item.createdat,'hh:mm a')
 
-ES7 react redux->extension vs code
+3. place the value of the manu date by formatting using moment js utils library as you did for discountedItem the same process
+ if there is manu date than format the date in YYYY-MM-DD but in the form it will  be shown as YYYY/MM/DD
 
-rcc for classbased component
-rfc for functional component
-rconst for constructor
+ productform line no.54 inside setstate
 
+ file upload 
+ 1. make input for file type=file
+ 2. handlechange
+ if(type=='file){
+     do something
+     clg(file)
+ }
+ this file will be taken to server with the help of xml http request
 
+ before pushing the files need to be saved in a state 
+ make a state nanmed
+  filesToupload:[]
+  and it immediately needs to be shown so make 
+  filestoShow:[]
 
-1. make add product component  and render it in the add product section while licking add product
- function based component
+  in onchange function
+  const {filesToupload,filestoShow}=this.state
+  filesToupload.push(files[0])
+  filestoShow.push(URL.createObjectURL(files[0]))
+  this.setState({
+      filesToupload,
+      filestoShow
+  })
 
-2.make product form by making productform folder and productform.component.js
- class based component
+  and show it on the uI as
+   <input type="file" className="form-control" onChange={this.handleChange}></input>
+                    {
+                        this.state.filetopreview.map((file, index) => {
+                            return (
+                                <div style={{ marginTop: '10px' }} key={index} >
+                                    <img src={file} alt="preview.png" width="200px"></img>
+                                    <span onClick={() => this.removeImage(index)} title="Remove Image" style={{ marginLeft: '5px', color: 'red' }}>
+                                        <FaTrashAlt></FaTrashAlt>
+                                    </span>
+                                </div>
 
-3.product form is called because it needs to be reused for edit action also
-and the call back is send as a props and is call to perform api call function
-
-the main thing is when you call add product api
-you need to set token and is done by issecured method also but i am proceeding by  checking the token using if else condition
-
-
-
-viewing the products and deleting the products
-nothing new 
-but the thing is you don't need to send data when delete request is send otherwise it will send an error mesasge
-
-
-make a seperate file for loader so that you can use the loader in other component as well
-
-use debugger to locate the error
-
-edit the products
-the thing is you need to go to editproduct page and show the values of particular id passeed to a form to make editable
-1.make a editproduct folder and component-classbased
-2. inside editproduct
-   componentdidmount
-   get product id by
-  const id= this.props.match.params('id)
- http get method call
- make a loader until an api call hasnot been finished
- console the result
-
- 3. you are using the same form to add product and edit : to know which is edit flag you place editflag 
- <productform isedit={true}/>
-and know if the component call is from register or edit 
-
-
-send the object got from get request to productform and process accordingly to show by first saving to the state
-
-when assigning values to the input fields
- warning triggers
-A component is changing a controlled input to be uncontrolled.
- This is likely caused by the value changing from a defined to undefined, 
- which should not happen. Decide between using a controlled or uncontrolled input
-  element for the lifetime of the component. More info:
-
-this is due to the undefined value placed as a value and defined value is undefined :
-when the values are placed in input from the datasets
-so the gist is 
-don't place undefined value in input for showing during productedit
-solution:
-make at least an empty string 
-   componentDidMount(){
-        const {productData}=this.props
-        if(productData){
-            this.setState({
-                data:{
-                    ...defaultForm,
-                    ...productData,
-                    discountedItem:productData.discount && productData.discount.discountedItem
-                    ?productData.discount.discountedItem
-                    :false,
-                    discountType:productData.discount && productData.discount.discountType
-                    ?productData.discount.discountType
-                    :'',
-                    discountValue:productData.discount && productData.discount.discountValue
-                    ?productData.discount.discountValue
-                    :'',
-                    
+                            )
+                        })
+                    }
 
 
-
-                }
-            })
-        }
+make a removeImage function
+    removeImage(index){
+        const { filetoupload, filetopreview } = this.state
+        filetoupload.splice(index,1)
+        filetopreview.splice(index,1)
+        this.setState({
+            filetoupload,
+            filetopreview
+        })
     }
-   
-    the setstate is done and value are defined accordingly
-    at least a single string will be there from defaultform by doing ...defaultForm
-
-    the problem again here came is  discounted item chekbox hasn't been shown  even after keeping its value 
-    so to fix logic was made if there is discount in productData and if discounted item is present make discounteditem as the same value
-    from productData
-    and so on
-
-    the data for values were placed from the state
-
-    callback function from editproduct to formdata was sent and put request got hit and redirected to the showproduct page
 
 
+successfully removed on UI now insert into database using XML HTTP request
+it requires form data so
+the call is done in Httpclient file
+
+handlesubmit will send (data,filetosend) to a callback function -> of productform
+
+xhr will send the post request from form data method
+
+now show the image uploaded in view page a single image
+
+you have a /file middleware in express server and you serve from that file
+make a env file for storing the image link
+
+REACT_APP_IMG_URL="http://localhost:4000/file/images"
+
+now using this link in img src section you can show the images as
+
+  <tr key={index}>
+                                            <th scope="row">{index + 1}</th>
+                                            <td><Link to={`/productdetails/${item._id}`}>{item.name}</Link></td>
+                                            <td>{item.category}</td>
+                                            <td>{formatDate(item.createdAt,"YYYY:MM:DD hh:mm a")}</td>
+                                            <td>{item.price}</td>
+                                            <td> <img src={`${IMG_URL}/${item.images[0]}`} alt="product.png" width="200px"></img> </td>
+                                            <td><button onClick={() => this.editproduct(item._id)} title="edit product"><FaPencilAlt /></button> <button onClick={() => this.removeproduct(item._id, index)} title="delete product"><FaTrash /></button></td>
+                                        </tr>
+
+which is done in img section
