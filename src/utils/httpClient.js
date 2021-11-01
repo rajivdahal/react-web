@@ -64,7 +64,9 @@ const DELETE=(url,data,params={})=>{
         
     })
 }
-const UPLOAD = (url, data = {}, files = []) => {
+const UPLOAD = (method,url, data = {}, files = []) => {
+    console.log("inside upload")
+    console.log("url is",`${BASE_URL}${url}`)
     return new Promise((resolve, reject) => {
         // for uploading files we are using xmlhttprequest
         // we are sending value as formData
@@ -93,7 +95,7 @@ const UPLOAD = (url, data = {}, files = []) => {
             }
         }
 
-        xhr.open('POST', `${BASE_URL}${url}?token=Bearer ${localStorage.getItem('token')}`, true)
+        xhr.open(method, `${BASE_URL}${url}?token=Bearer ${localStorage.getItem('token')}`, true)
         xhr.send(formData)
     })
 

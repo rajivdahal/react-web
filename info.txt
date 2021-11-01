@@ -1,49 +1,44 @@
-1. make discounttype select and option
-2.make the date readable and show created at 
- for this date utils-> file is made and formatted in table-> to show created at date
-  to use :
-  formatdate(item.createdat,'ddd YYYY/MM/DD)
-  formatdate is a function called from utility component folder 
-  to get time only
-  formatdate(item.createdat,'hh:mm a')
+file edit
+1. load existing images in productform files
+    there are two flags in productform-filesToupload,filetopreview
+    there is already preview of images stored in filetopreview in UI and if not already just show them in UI but in our case it is already shown
+    not the task is to add all the files and images obtained from get requeest on componentdidmount on productform when clicked 
+    on edit button to producttopreview
 
-3. place the value of the manu date by formatting using moment js utils library as you did for discountedItem the same process
- if there is manu date than format the date in YYYY-MM-DD but in the form it will  be shown as YYYY/MM/DD
+    strategy:
+    make an  empty array->previousimages
+    map all the images present in response to that initialized empty array->images should be real (call the image usl to server and fetch image)
+    set state the empty array to filestoprevies
+    when states changes render will call and show the images
+     
+  in productform 
 
- productform line no.54 inside setstate
+  componentDidMount() {
+        const { productData } = this.props
+        console.log(productData.images)
+        console.log(IMG_URL)
+        let previousimages = []
+        if (productData.images) {
+            previousimages = productData.images.map((item, index) => {
+                return (
+                    `${IMG_URL}/${item}`
+                )
+            })
+        }
+  }
 
- file upload 
- 1. make input for file type=file
- 2. handlechange
- if(type=='file){
-     do something
-     clg(file)
- }
- this file will be taken to server with the help of xml http request
+now update the state imageto preview by previousimage
+this.setState({
+    filetopreview: previousimages
+})
+whenever the state gets changed render will trigger and all  images will be shown
 
- before pushing the files need to be saved in a state 
- make a state nanmed
-  filesToupload:[]
-  and it immediately needs to be shown so make 
-  filestoShow:[]
-
-  in onchange function
-  const {filesToupload,filestoShow}=this.state
-  filesToupload.push(files[0])
-  filestoShow.push(URL.createObjectURL(files[0]))
-  this.setState({
-      filesToupload,
-      filestoShow
-  })
-
-  and show it on the uI as
-   <input type="file" className="form-control" onChange={this.handleChange}></input>
-                    {
+  {
                         this.state.filetopreview.map((file, index) => {
                             return (
                                 <div style={{ marginTop: '10px' }} key={index} >
                                     <img src={file} alt="preview.png" width="200px"></img>
-                                    <span onClick={() => this.removeImage(index)} title="Remove Image" style={{ marginLeft: '5px', color: 'red' }}>
+                                    <span onClick={() => this.removeImage('old',index,file)} title="Remove Image" style={{ marginLeft: '5px', color: 'red' }}>
                                         <FaTrashAlt></FaTrashAlt>
                                     </span>
                                 </div>
@@ -52,44 +47,159 @@
                         })
                     }
 
+upto here all images are stored in previewimages  are ar loaded successfully
+2. whenever you click the upload image section anything /anyfile gets selected so to choose only iimages 
+in input put 
 
-make a removeImage function
-    removeImage(index){
-        const { filetoupload, filetopreview } = this.state
-        filetoupload.splice(index,1)
-        filetopreview.splice(index,1)
+ accept="images/*"
+
+now only images are selected
+
+3. whenever you click delete button the previous logic was
+ splicing both filetoupload and filetopreview
+ but in this case there is only data in filetopreview no images in filetoupload and what if in the case of edit you want to delete
+ old pics? splicing the filetoupload the state that doesn't have any data won't do any work 
+and simultaneously you need to upload the new files from input tag
+
+so:
+step1. make three states insted of three 
+            filetoupload: [],
+            filetopreview: [],
+            filestoremove: [],
+
+step2. data will be stored on componentdidmount on filetopreview: the logic for filetopreview will be same as above
+step3. when you add file onchange function is run and store the file to filetoupload coz it is new file and need to be uploaded 
+         this file should need to be rendered in UI so modify the state of filetoupload by the content of file to upload
+     
+     handleChange = (e) => {
+        let { name, value, type, checked, files } = e.target;
+        console.log(name, value)
+        if (type === 'file') {
+            console.log("files", files)
+            const { filetoupload } = this.state
+            filetoupload.push(files[0])
+            // filetopreview.push(URL.createObjectURL(files[0]))
+            this.setState({
+                filetoupload,
+                // filetopreview
+            })
+
+        } 
+step4. make  a division to render filetoupload in html content
+     {
+                        this.state.filetoupload.map((file, index) => {
+                            return (
+                                <div style={{ marginTop: '10px' }} key={index} >
+                                    <img src={URL.createObjectURL(file)} alt="preview.png" width="200px"></img>
+                                    <span onClick={() => this.removeImage('new',index)} title="Remove Image" style={{ marginLeft: '5px', color: 'red' }}>
+                                        <FaTrashAlt></FaTrashAlt>
+                                    </span>
+                                </div>
+
+                            )
+                        })
+                    }
+
+img src always should be url otherwise src won't work so in src URL.createObjectURL(file) is there but at other rendering only files is placed as you can see 
+above coz they are the files already processed and url is there in file
+
+step5. whenever you click delete button removeproduct button is clicked 
+  to delete product 
+   logic: if the file is newly added file it is stored in imagetopreview and splice by 1 from its index 
+   if the file is old file : store the file in filetoremove state coz it need to be removed from database also and send the state to edit callback 
+                             and at the same time splice the filetopreview from its index by 1 
+                              
+                                  removeImage(type,index,file) {
+        const { filetoupload, filetopreview,filestoremove } = this.state
+        if(type==="old"){
+            filetopreview.splice(index, 1)
+            filestoremove.push(file)            
+        }
+        if(type==="new"){
+            filetoupload.splice(index,1)
+        }
         this.setState({
             filetoupload,
-            filetopreview
+            filetopreview,
+            filestoremove
         })
+       
     }
 
+ step6. now submit the data to callback on onsubmit button
+   handleSubmit = (e) => {
+        e.preventDefault()
+        this.props.submitCallback(this.state.data, this.state.filetoupload,this.state.filestoremove)
 
-successfully removed on UI now insert into database using XML HTTP request
-it requires form data so
-the call is done in Httpclient file
+    }   
 
-handlesubmit will send (data,filetosend) to a callback function -> of productform
+step7. in edit callback 
+ call the api-> by getting the data just send from here
+but the data must be form data coz it's a file upload so use xhr
+call upload -> xhr request insted of post of axios
 
-xhr will send the post request from form data method
+ edit=(data,filesToUpload = [], filesToRemove = [])=>{
+        this.setState({
+            isSubmitting:true
+        })
+        const requestData = {
+            ...data,
+            filesToRemove
+        }
+        httpClient.UPLOAD('PUT',`product/${data._id}`,requestData,filesToUpload)
+        .then(response=>{
+            notify.Successnotification('product updated successfully')
+            this.props.history.push('/viewproduct')
+        })
+        .catch(err=>{
+            errorHandler(err)
+        })
+        .finally(()=>{
+            this.setState({
+                isSubmitting:false
+            })
+        })
 
-now show the image uploaded in view page a single image
+  step8. modify/create upload in httpclient file 
 
-you have a /file middleware in express server and you serve from that file
-make a env file for storing the image link
 
-REACT_APP_IMG_URL="http://localhost:4000/file/images"
+const UPLOAD = (method,url, data = {}, files = []) => {
+    console.log("inside upload")
+    console.log("url is",`${BASE_URL}${url}`)
+    return new Promise((resolve, reject) => {
+        // for uploading files we are using xmlhttprequest
+        // we are sending value as formData
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData();
 
-now using this link in img src section you can show the images as
 
-  <tr key={index}>
-                                            <th scope="row">{index + 1}</th>
-                                            <td><Link to={`/productdetails/${item._id}`}>{item.name}</Link></td>
-                                            <td>{item.category}</td>
-                                            <td>{formatDate(item.createdAt,"YYYY:MM:DD hh:mm a")}</td>
-                                            <td>{item.price}</td>
-                                            <td> <img src={`${IMG_URL}/${item.images[0]}`} alt="product.png" width="200px"></img> </td>
-                                            <td><button onClick={() => this.editproduct(item._id)} title="edit product"><FaPencilAlt /></button> <button onClick={() => this.removeproduct(item._id, index)} title="delete product"><FaTrash /></button></td>
-                                        </tr>
+        // append files in form data
+        // this will work for single file and multiple
+        files.forEach(item => {
+            formData.append('image', item, item.name)
+        })
 
-which is done in img section
+        // append textual data in formdata
+        for (let key in data) {
+            formData.append(key, data[key])
+        }
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    resolve(xhr.response)
+                } else {
+                    reject(xhr.response)
+                }
+            }
+        }
+
+        xhr.open(method, `${BASE_URL}${url}?token=Bearer ${localStorage.getItem('token')}`, true)
+        xhr.send(formData)
+    })
+
+}      
+
+
+the backend part for the code is written in expresss side
+              

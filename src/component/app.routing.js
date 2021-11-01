@@ -8,6 +8,7 @@ import { Sidebar } from "./Common/Sidebar/sidebar.component";
 import Addproduct from "./Products/addproduct/addproduct.component";
 import viewproducts from "./Products/viewproduct/viewproducts.component";
 import Editproduct from "./Products/editproduct/editproduct.component";
+import Searchproduct from "./Products/searchproduct/searchproduct.component";
 export const Approuting=(props)=>{
     const home=(props)=>{
         console.log("props ib home",props)
@@ -70,6 +71,7 @@ export const Approuting=(props)=>{
                 <ProtectedRoute  path="/addproduct" component={Addproduct}></ProtectedRoute>
                 <ProtectedRoute  path="/viewproduct" component={viewproducts}></ProtectedRoute>
                 <ProtectedRoute  path="/editproduct/:id" component={Editproduct}></ProtectedRoute>
+                <ProtectedRoute  path="/searchproduct/" component={Searchproduct}></ProtectedRoute>
                 <PublicRoute  path="/help" component={help}></PublicRoute>
                 <PublicRoute component={Pagenotfound}></PublicRoute>
             </Switch>

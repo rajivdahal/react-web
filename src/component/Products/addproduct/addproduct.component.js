@@ -18,7 +18,7 @@ export default class Addproduct extends Component {
         })
         console.log("here in add prodcut component >>", data)
         // httpClient.POST('/product',data)
-        httpClient.UPLOAD('/product',data,files)
+        httpClient.UPLOAD('POST','product',data,files)
         .then(response=>{
             notify.Successnotification("register successful")
             console.log(response)

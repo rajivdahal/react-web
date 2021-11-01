@@ -3,6 +3,7 @@ import { FaTrashAlt } from 'react-icons/fa'
 import { formatDate } from '../../../utils/dateUtils'
 import { Submitbtn } from '../../Common/Submitbtn/Submitbtn.component'
 import './productform.component.css'
+const IMG_URL = process.env.REACT_APP_IMG_URL;
 
 const defaultForm = {
     name: '',
@@ -23,7 +24,6 @@ const defaultForm = {
     tags: '',
     stock_quantity: '',
     offers: '',
-
 }
 
 export default class Productform extends Component {
@@ -39,11 +39,25 @@ export default class Productform extends Component {
             },
             filetoupload: [],
             filetopreview: [],
+            filestoremove: [],
         }
     }
-    componentDidMount() {
-        const { productData } = this.props
+  
+  componentDidMount() {
+        const  productData  = this.props.productData?this.props.productData:null 
+        
+        
+        
         if (productData) {
+            let previousimages = []
+            if (productData.images) {
+                console.log("inside componentdidmount")
+                previousimages = productData.images.map((item, index) => {
+                    return (
+                        `${IMG_URL}/${item}`
+                    )
+                })
+            }
             this.setState({
                 data: {
                     ...defaultForm,
@@ -57,12 +71,11 @@ export default class Productform extends Component {
                     discountValue: productData.discount && productData.discount.discountValue
                         ? productData.discount.discountValue
                         : '',
-                    manuDate: productData.manuDate ? formatDate(productData.manuDate, 'YYYY-MM-DD') : ''
+                    manuDate: productData.manuDate ? formatDate(productData.manuDate, 'YYYY-MM-DD') : '',
+                    
 
-
-
-
-                }
+                },
+                filetopreview: previousimages
             })
         }
     }
@@ -70,22 +83,21 @@ export default class Productform extends Component {
         e.preventDefault()
         console.log("triggered")
         console.log(this.state.data)
-        this.props.submitCallback(this.state.data,this.state.filetoupload)
+        this.props.submitCallback(this.state.data, this.state.filetoupload,this.state.filestoremove)
 
     }
 
     handleChange = (e) => {
-
         let { name, value, type, checked, files } = e.target;
         console.log(name, value)
         if (type === 'file') {
             console.log("files", files)
             const { filetoupload, filetopreview } = this.state
             filetoupload.push(files[0])
-            filetopreview.push(URL.createObjectURL(files[0]))
+            // filetopreview.push(URL.createObjectURL(files[0]))
             this.setState({
                 filetoupload,
-                filetopreview
+                // filetopreview
             })
 
         }
@@ -109,14 +121,21 @@ export default class Productform extends Component {
     validateform = (name) => {
 
     }
-    removeImage(index){
-        const { filetoupload, filetopreview } = this.state
-        filetoupload.splice(index,1)
-        filetopreview.splice(index,1)
+    removeImage(type,index,file) {
+        const { filetoupload, filetopreview,filestoremove } = this.state
+        if(type==="old"){
+            filetopreview.splice(index, 1)
+            filestoremove.push(file)            
+        }
+        if(type==="new"){
+            filetoupload.splice(index,1)
+        }
         this.setState({
             filetoupload,
-            filetopreview
+            filetopreview,
+            filestoremove
         })
+       
     }
 
     render() {
@@ -196,7 +215,20 @@ export default class Productform extends Component {
                             return (
                                 <div style={{ marginTop: '10px' }} key={index} >
                                     <img src={file} alt="preview.png" width="200px"></img>
-                                    <span onClick={() => this.removeImage(index)} title="Remove Image" style={{ marginLeft: '5px', color: 'red' }}>
+                                    <span onClick={() => this.removeImage('old',index,file)} title="Remove Image" style={{ marginLeft: '5px', color: 'red' }}>
+                                        <FaTrashAlt></FaTrashAlt>
+                                    </span>
+                                </div>
+
+                            )
+                        })
+                    }
+                    {
+                        this.state.filetoupload.map((file, index) => {
+                            return (
+                                <div style={{ marginTop: '10px' }} key={index} >
+                                    <img src={URL.createObjectURL(file)} alt="preview.png" width="200px"></img>
+                                    <span onClick={() => this.removeImage('new',index)} title="Remove Image" style={{ marginLeft: '5px', color: 'red' }}>
                                         <FaTrashAlt></FaTrashAlt>
                                     </span>
                                 </div>

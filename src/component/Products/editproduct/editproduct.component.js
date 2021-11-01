@@ -16,6 +16,8 @@ export default class Editproduct extends Component {
         }
     }
     componentDidMount() {
+
+
         const productid = this.props.match.params['id']
         this.setState({
             isloading: true
@@ -35,11 +37,16 @@ export default class Editproduct extends Component {
             })
         })
     }
-    edit=(data)=>{
+    edit=(data,filesToUpload = [], filesToRemove = [])=>{
         this.setState({
             isSubmitting:true
         })
-        httpClient.PUT(`product/${data._id}`,data)
+        const requestData = {
+            ...data,
+            filesToRemove,
+            vendor:data.vendor._id,
+        }
+        httpClient.UPLOAD('PUT',`product/${data._id}`,requestData,filesToUpload)
         .then(response=>{
             notify.Successnotification('product updated successfully')
             this.props.history.push('/viewproduct')
