@@ -1,157 +1,55 @@
-file edit
-1. load existing images in productform files
-    there are two flags in productform-filesToupload,filetopreview
-    there is already preview of images stored in filetopreview in UI and if not already just show them in UI but in our case it is already shown
-    not the task is to add all the files and images obtained from get requeest on componentdidmount on productform when clicked 
-    on edit button to producttopreview
+search product
 
-    strategy:
-    make an  empty array->previousimages
-    map all the images present in response to that initialized empty array->images should be real (call the image usl to server and fetch image)
-    set state the empty array to filestoprevies
-    when states changes render will call and show the images
-     
-  in productform 
+1. make a class based component and register route for searchproduct component
+2. we are going to search from different labels like
+  name:'',
+    category:'',
+    minPrice:'',
+    maxPrice:'',
+    fromDate:'',
+    toDate:'',
+    tags:'',
 
-  componentDidMount() {
-        const { productData } = this.props
-        console.log(productData.images)
-        console.log(IMG_URL)
-        let previousimages = []
-        if (productData.images) {
-            previousimages = productData.images.map((item, index) => {
-                return (
-                    `${IMG_URL}/${item}`
-                )
-            })
-        }
-  }
 
-now update the state imageto preview by previousimage
-this.setState({
-    filetopreview: previousimages
-})
-whenever the state gets changed render will trigger and all  images will be shown
+so make state for them and define the error and other states isValidForm and isSubmitting
+3. make form and inputs -> dropdown for category
+4. search all the products in componentdidmount by post request 
+make allproducts:[]
+     categories:[]
 
-  {
-                        this.state.filetopreview.map((file, index) => {
-                            return (
-                                <div style={{ marginTop: '10px' }} key={index} >
-                                    <img src={file} alt="preview.png" width="200px"></img>
-                                    <span onClick={() => this.removeImage('old',index,file)} title="Remove Image" style={{ marginLeft: '5px', color: 'red' }}>
-                                        <FaTrashAlt></FaTrashAlt>
-                                    </span>
-                                </div>
+ in then of promise foreach loop to each of object response and push categories to categories state
+ans response.data to allproducts
 
-                            )
-                        })
-                    }
 
-upto here all images are stored in previewimages  are ar loaded successfully
-2. whenever you click the upload image section anything /anyfile gets selected so to choose only iimages 
-in input put 
+5. in a dropdown menu apply loop to a dropdown option and  map all the categories item and show then in options 
+ the problem is if many item have same categories same categories will be no. of times
 
- accept="images/*"
+6. the solution is while adding check the index of item.category 
+if category===-1 (not found) then only push in the categories state
 
-now only images are selected
 
-3. whenever you click delete button the previous logic was
- splicing both filetoupload and filetopreview
- but in this case there is only data in filetopreview no images in filetoupload and what if in the case of edit you want to delete
- old pics? splicing the filetoupload the state that doesn't have any data won't do any work 
-and simultaneously you need to upload the new files from input tag
 
-so:
-step1. make three states insted of three 
-            filetoupload: [],
-            filetopreview: [],
-            filestoremove: [],
+7. make a name dropdown and after selecting category only all the names belonging to that category will be shown in the dropdown
+  assume necessary states and all 
 
-step2. data will be stored on componentdidmount on filetopreview: the logic for filetopreview will be same as above
-step3. when you add file onchange function is run and store the file to filetoupload coz it is new file and need to be uploaded 
-         this file should need to be rendered in UI so modify the state of filetoupload by the content of file to upload
-     
-     handleChange = (e) => {
-        let { name, value, type, checked, files } = e.target;
-        console.log(name, value)
-        if (type === 'file') {
-            console.log("files", files)
-            const { filetoupload } = this.state
-            filetoupload.push(files[0])
-            // filetopreview.push(URL.createObjectURL(files[0]))
-            this.setState({
-                filetoupload,
-                // filetopreview
-            })
+8. map all the names to show in name dropdown
+9. now on submit search the products by calling the API,
 
-        } 
-step4. make  a division to render filetoupload in html content
-     {
-                        this.state.filetoupload.map((file, index) => {
-                            return (
-                                <div style={{ marginTop: '10px' }} key={index} >
-                                    <img src={URL.createObjectURL(file)} alt="preview.png" width="200px"></img>
-                                    <span onClick={() => this.removeImage('new',index)} title="Remove Image" style={{ marginLeft: '5px', color: 'red' }}>
-                                        <FaTrashAlt></FaTrashAlt>
-                                    </span>
-                                </div>
-
-                            )
-                        })
-                    }
-
-img src always should be url otherwise src won't work so in src URL.createObjectURL(file) is there but at other rendering only files is placed as you can see 
-above coz they are the files already processed and url is there in file
-
-step5. whenever you click delete button removeproduct button is clicked 
-  to delete product 
-   logic: if the file is newly added file it is stored in imagetopreview and splice by 1 from its index 
-   if the file is old file : store the file in filetoremove state coz it need to be removed from database also and send the state to edit callback 
-                             and at the same time splice the filetopreview from its index by 1 
-                              
-                                  removeImage(type,index,file) {
-        const { filetoupload, filetopreview,filestoremove } = this.state
-        if(type==="old"){
-            filetopreview.splice(index, 1)
-            filestoremove.push(file)            
-        }
-        if(type==="new"){
-            filetoupload.splice(index,1)
-        }
-        this.setState({
-            filetoupload,
-            filetopreview,
-            filestoremove
-        })
-       
-    }
-
- step6. now submit the data to callback on onsubmit button
-   handleSubmit = (e) => {
+ handleSubmit=(e)=>{
         e.preventDefault()
-        this.props.submitCallback(this.state.data, this.state.filetoupload,this.state.filestoremove)
+        httpClient.POST('/product/search', this.state.data)
+        .then(response => {
+            console.log('response >>', response.data)
+            if (!response.data.length) {
+                return notify.Errornotification("No any products matched your search query!")
+            }
+            this.setState({
+                searchResults: response.data
+            })
 
-    }   
-
-step7. in edit callback 
- call the api-> by getting the data just send from here
-but the data must be form data coz it's a file upload so use xhr
-call upload -> xhr request insted of post of axios
-
- edit=(data,filesToUpload = [], filesToRemove = [])=>{
-        this.setState({
-            isSubmitting:true
         })
-        const requestData = {
-            ...data,
-            filesToRemove
-        }
-        httpClient.UPLOAD('PUT',`product/${data._id}`,requestData,filesToUpload)
-        .then(response=>{
-            notify.Successnotification('product updated successfully')
-            this.props.history.push('/viewproduct')
-        })
-        .catch(err=>{
+        .catch(err => {
+            console.log("inside catch")
             errorHandler(err)
         })
         .finally(()=>{
@@ -159,47 +57,113 @@ call upload -> xhr request insted of post of axios
                 isSubmitting:false
             })
         })
+}
 
-  step8. modify/create upload in httpclient file 
+10. all the products are stored in searchResults now to rrender viewproduct page is used and all the products are passed, viewproducts 
+page is view when searchResults is filled else the normal form page is filled
+props to the viewproducts page are passed so that data from search page is known:
+ productData={this.state.searchResults} resetSearch={this.reset}
+
+  in searchpage logic :
+   of props.productData then return(setstate({
+     products:productData
+   }))
+   while returning in componentdidmount other code will not run(viewproduct page will not run)
 
 
-const UPLOAD = (method,url, data = {}, files = []) => {
-    console.log("inside upload")
-    console.log("url is",`${BASE_URL}${url}`)
-    return new Promise((resolve, reject) => {
-        // for uploading files we are using xmlhttprequest
-        // we are sending value as formData
-        const xhr = new XMLHttpRequest();
-        const formData = new FormData();
+rendering method:
+  let content = this.state.searchResults.length > 0?
+        <Viewproducts productData={this.state.searchResults} resetSearch={this.reset}></Viewproducts>
+        :<div className="content">
+        <h2>Search Product</h2>
+        <form className="form-group" onSubmit={this.handleSubmit} noValidate>
+        code ............................................
+         </form>
 
+ here the viewproduct page is not routed but rendered as component from searchproduct so the route won.t be changed still /searchproduct
+ will be there  but the content will be of viewproduct
 
-        // append files in form data
-        // this will work for single file and multiple
-        files.forEach(item => {
-            formData.append('image', item, item.name)
-        })
+so whenever the data are viewed, to search again if you go back the form to show again won't be shown so a callback function as a props
+to viewproduct is passed and button is made to search products again 
 
-        // append textual data in formdata
-        for (let key in data) {
-            formData.append(key, data[key])
-        }
+when they click the button from viewproduct -> callback function is triggered (props are forward and backward compatible) 
 
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    resolve(xhr.response)
-                } else {
-                    reject(xhr.response)
+following code is in viewproduct when click goes to callback
+ {
+                 this.props.productData?(
+                    <button onClick={this.props.resetSearch} className="btn btn-success" >Search Again</button>
+                ):''
                 }
-            }
+
+
+
+callback
+  
+reset = () => {
+    this.setState({
+        searchResults: [],
+        data: {
+            ...defaultForm
+        }
+    })
+}
+
+searchresult result are initialized to emypt array and again the form is rendered data are set to defaultform-empty arrray
+and productform will load with reset values in each 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+Calling API and making to work mechanism
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+all the data from states are send to the data field on api and those data are handled and processed by backend querry to
+give the products
+
+there is issue :
+our mechanism is whenever the user types name-> search-> name mathing products component
+our mechanism is whenever the user types category-> search-> category mathing products component
+our mechanism is whenever the user types brand-> search-> brand mathing products component
+
+unfortunately color is missing in our database modeling 
+
+and the problem is 
+whenever you insert the date field from date(item created date) is set but you didn't type the to date without 
+to date checking multipledate range option-> to date to date won't set hence backend code won't work as it won't go through if statement
+and the backend code is
+
+if (data.fromDate && data.toDate) {
+        const fromDate = new Date(data.fromDate).setHours(0, 0, 0, 0);
+        const toDate = new Date(data.toDate).setHours(23, 59, 59, 999);
+        condition.createdAt = {
+            $lte: new Date(toDate),
+            $gte: new Date(fromDate)
+        }
+    }
+
+so we must assign to date
+
+while submitting form
+        const {data}=this.state
+        if(!data.multipleDateRange){
+            data.toDate=data.fromDate
+        }
+        if(data.multipleDateRange && !data.toDate){
+            data.toDate=data.fromDate
         }
 
-        xhr.open(method, `${BASE_URL}${url}?token=Bearer ${localStorage.getItem('token')}`, true)
-        xhr.send(formData)
-    })
+why this code? how it works?
+backend mechanism explained
 
-}      
+        const fromDate = new Date(data.fromDate).setHours(0, 0, 0, 0);
+whenever you give date as 2021/01/01 the backend sets the time to 12 am time of   2021/01/01
+         const toDate = new Date(data.toDate).setHours(23, 59, 59, 999);
+whenever you give date as 2021/01/01 the backend sets the time just before to  am time of   2021/01/02 
+so tin this way 1 day duration is set and if you don't give to date also 1 day duration is set that means that day (particular day)
+
+other logic are same and are understoodable
 
 
-the backend part for the code is written in expresss side
-              
+
+
+
+
+

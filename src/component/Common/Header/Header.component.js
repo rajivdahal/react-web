@@ -12,6 +12,7 @@ const logout=(props)=>{
 
 const Headercomponent=(props)=>{
     console.log("props in header",props)
+    
     //incoming props
     let content=props.isLoggedIn?
     <ul className="nav_item">
@@ -19,6 +20,9 @@ const Headercomponent=(props)=>{
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/about">about</NavLink></li>
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/contact">contact</NavLink></li>
     <li className="nav_list"><NavLink activeClassName="activeclass" to="/setting">setting</NavLink></li>
+    <li className="nav_list">username</li>
+
+
     <li className="nav_list">
         <div className="logout_btn">
         <button className="btn btn-success" onClick={()=>{logout(props.history)}}>Logout</button>{/*to redirect to login p age pass argument only through function not directly with logout(args)  */}

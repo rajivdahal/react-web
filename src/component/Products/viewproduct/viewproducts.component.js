@@ -7,9 +7,9 @@ import { Link } from 'react-router-dom'
 import { notify } from '../../../utils/notify'
 import { formatDate } from '../../../utils/dateUtils'
 // import Addproduct from '../addproduct/addproduct.component'
-const IMG_URL=process.env.REACT_APP_IMG_URL
+const IMG_URL = process.env.REACT_APP_IMG_URL
 
-export default class viewproducts extends Component {
+export default class Viewproducts extends Component {
     constructor() {
         super()
 
@@ -19,6 +19,12 @@ export default class viewproducts extends Component {
         }
     }
     componentDidMount() {
+        if (this.props.productData) {
+            return this.setState({
+                products: this.props.productData
+            })
+        }
+
         this.setState({
             isloading: true
         })
@@ -54,7 +60,7 @@ export default class viewproducts extends Component {
                 })
         }
     }
-    editproduct(id){
+    editproduct(id) {
         this.props.history.push(`/editproduct/${id}`)
     }
     render() {
@@ -89,7 +95,7 @@ export default class viewproducts extends Component {
                                             <th scope="row">{index + 1}</th>
                                             <td><Link to={`/productdetails/${item._id}`}>{item.name}</Link></td>
                                             <td>{item.category}</td>
-                                            <td>{formatDate(item.createdAt,"YYYY:MM:DD hh:mm a")}</td>
+                                            <td>{formatDate(item.createdAt, "YYYY:MM:DD hh:mm a")}</td>
                                             <td>{item.price}</td>
                                             <td> <img src={`${IMG_URL}/${item.images[0]}`} alt="product.png" width="200px"></img> </td>
                                             <td><button onClick={() => this.editproduct(item._id)} title="edit product"><FaPencilAlt /></button> <button onClick={() => this.removeproduct(item._id, index)} title="delete product"><FaTrash /></button></td>
@@ -102,6 +108,12 @@ export default class viewproducts extends Component {
                 </>
         return (
             <div className="content">
+                {
+                 this.props.productData?(
+                    <button onClick={this.props.resetSearch} className="btn btn-success" >Search Again</button>
+                ):''
+                }
+
                 {content}
             </div>
         )

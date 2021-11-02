@@ -6,7 +6,7 @@ import { Pagenotfound } from "./Common/Pagenotfound/Pagenotfound.component";
 import { dashboard } from "./Users/dashboard/dashboard.component";
 import { Sidebar } from "./Common/Sidebar/sidebar.component";
 import Addproduct from "./Products/addproduct/addproduct.component";
-import viewproducts from "./Products/viewproduct/viewproducts.component";
+import Viewproducts from "./Products/viewproduct/viewproducts.component";
 import Editproduct from "./Products/editproduct/editproduct.component";
 import Searchproduct from "./Products/searchproduct/searchproduct.component";
 export const Approuting=(props)=>{
@@ -69,7 +69,7 @@ export const Approuting=(props)=>{
                 <PublicRoute  path="/contact" component={contact}></PublicRoute>
                 <ProtectedRoute  path="/dashboard" component={dashboard}></ProtectedRoute>
                 <ProtectedRoute  path="/addproduct" component={Addproduct}></ProtectedRoute>
-                <ProtectedRoute  path="/viewproduct" component={viewproducts}></ProtectedRoute>
+                <ProtectedRoute  path="/viewproduct" component={Viewproducts}></ProtectedRoute>
                 <ProtectedRoute  path="/editproduct/:id" component={Editproduct}></ProtectedRoute>
                 <ProtectedRoute  path="/searchproduct/" component={Searchproduct}></ProtectedRoute>
                 <PublicRoute  path="/help" component={help}></PublicRoute>

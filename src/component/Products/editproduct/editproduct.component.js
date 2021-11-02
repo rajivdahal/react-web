@@ -16,8 +16,6 @@ export default class Editproduct extends Component {
         }
     }
     componentDidMount() {
-
-
         const productid = this.props.match.params['id']
         this.setState({
             isloading: true

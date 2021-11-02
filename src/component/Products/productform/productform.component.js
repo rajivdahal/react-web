@@ -44,10 +44,7 @@ export default class Productform extends Component {
     }
   
   componentDidMount() {
-        const  productData  = this.props.productData?this.props.productData:null 
-        
-        
-        
+        const  productData  = this.props.productData?this.props.productData:null
         if (productData) {
             let previousimages = []
             if (productData.images) {
@@ -72,7 +69,6 @@ export default class Productform extends Component {
                         ? productData.discount.discountValue
                         : '',
                     manuDate: productData.manuDate ? formatDate(productData.manuDate, 'YYYY-MM-DD') : '',
-                    
 
                 },
                 filetopreview: previousimages
