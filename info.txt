@@ -1,169 +1,20 @@
-search product
+forget password and resetting password
 
-1. make a class based component and register route for searchproduct component
-2. we are going to search from different labels like
-  name:'',
-    category:'',
-    minPrice:'',
-    maxPrice:'',
-    fromDate:'',
-    toDate:'',
-    tags:'',
+1. we made forgot password class based component 
 
+its a normal form and call the api for forgot password and rest of the work is done in backend,
+when you click the submit button 
+nacessary data: email is send to POST request to call api
+api is called and the link is send to your gmail to reset password from backend and you click that 
+link
+will redirect to reset_password page
 
-so make state for them and define the error and other states isValidForm and isSubmitting
-3. make form and inputs -> dropdown for category
-4. search all the products in componentdidmount by post request 
-make allproducts:[]
-     categories:[]
-
- in then of promise foreach loop to each of object response and push categories to categories state
-ans response.data to allproducts
+that you will be creating 
 
 
-5. in a dropdown menu apply loop to a dropdown option and  map all the categories item and show then in options 
- the problem is if many item have same categories same categories will be no. of times
+you will give the password and and confirm by form validation and again rest of the task is given to backend
+reset_password api is called 
 
-6. the solution is while adding check the index of item.category 
-if category===-1 (not found) then only push in the categories state
-
-
-
-7. make a name dropdown and after selecting category only all the names belonging to that category will be shown in the dropdown
-  assume necessary states and all 
-
-8. map all the names to show in name dropdown
-9. now on submit search the products by calling the API,
-
- handleSubmit=(e)=>{
-        e.preventDefault()
-        httpClient.POST('/product/search', this.state.data)
-        .then(response => {
-            console.log('response >>', response.data)
-            if (!response.data.length) {
-                return notify.Errornotification("No any products matched your search query!")
-            }
-            this.setState({
-                searchResults: response.data
-            })
-
-        })
-        .catch(err => {
-            console.log("inside catch")
-            errorHandler(err)
-        })
-        .finally(()=>{
-            this.setState({
-                isSubmitting:false
-            })
-        })
-}
-
-10. all the products are stored in searchResults now to rrender viewproduct page is used and all the products are passed, viewproducts 
-page is view when searchResults is filled else the normal form page is filled
-props to the viewproducts page are passed so that data from search page is known:
- productData={this.state.searchResults} resetSearch={this.reset}
-
-  in searchpage logic :
-   of props.productData then return(setstate({
-     products:productData
-   }))
-   while returning in componentdidmount other code will not run(viewproduct page will not run)
-
-
-rendering method:
-  let content = this.state.searchResults.length > 0?
-        <Viewproducts productData={this.state.searchResults} resetSearch={this.reset}></Viewproducts>
-        :<div className="content">
-        <h2>Search Product</h2>
-        <form className="form-group" onSubmit={this.handleSubmit} noValidate>
-        code ............................................
-         </form>
-
- here the viewproduct page is not routed but rendered as component from searchproduct so the route won.t be changed still /searchproduct
- will be there  but the content will be of viewproduct
-
-so whenever the data are viewed, to search again if you go back the form to show again won't be shown so a callback function as a props
-to viewproduct is passed and button is made to search products again 
-
-when they click the button from viewproduct -> callback function is triggered (props are forward and backward compatible) 
-
-following code is in viewproduct when click goes to callback
- {
-                 this.props.productData?(
-                    <button onClick={this.props.resetSearch} className="btn btn-success" >Search Again</button>
-                ):''
-                }
-
-
-
-callback
-  
-reset = () => {
-    this.setState({
-        searchResults: [],
-        data: {
-            ...defaultForm
-        }
-    })
-}
-
-searchresult result are initialized to emypt array and again the form is rendered data are set to defaultform-empty arrray
-and productform will load with reset values in each 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-Calling API and making to work mechanism
-/////////////////////////////////////////////////////////////////////////////////////////////////
-
-all the data from states are send to the data field on api and those data are handled and processed by backend querry to
-give the products
-
-there is issue :
-our mechanism is whenever the user types name-> search-> name mathing products component
-our mechanism is whenever the user types category-> search-> category mathing products component
-our mechanism is whenever the user types brand-> search-> brand mathing products component
-
-unfortunately color is missing in our database modeling 
-
-and the problem is 
-whenever you insert the date field from date(item created date) is set but you didn't type the to date without 
-to date checking multipledate range option-> to date to date won't set hence backend code won't work as it won't go through if statement
-and the backend code is
-
-if (data.fromDate && data.toDate) {
-        const fromDate = new Date(data.fromDate).setHours(0, 0, 0, 0);
-        const toDate = new Date(data.toDate).setHours(23, 59, 59, 999);
-        condition.createdAt = {
-            $lte: new Date(toDate),
-            $gte: new Date(fromDate)
-        }
-    }
-
-so we must assign to date
-
-while submitting form
-        const {data}=this.state
-        if(!data.multipleDateRange){
-            data.toDate=data.fromDate
-        }
-        if(data.multipleDateRange && !data.toDate){
-            data.toDate=data.fromDate
-        }
-
-why this code? how it works?
-backend mechanism explained
-
-        const fromDate = new Date(data.fromDate).setHours(0, 0, 0, 0);
-whenever you give date as 2021/01/01 the backend sets the time to 12 am time of   2021/01/01
-         const toDate = new Date(data.toDate).setHours(23, 59, 59, 999);
-whenever you give date as 2021/01/01 the backend sets the time just before to  am time of   2021/01/02 
-so tin this way 1 day duration is set and if you don't give to date also 1 day duration is set that means that day (particular day)
-
-other logic are same and are understoodable
-
-
-
-
-
-
-
+if then({
+    redirect to login page(successfully resetted password) please login
+})

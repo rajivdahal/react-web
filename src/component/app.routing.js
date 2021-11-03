@@ -9,6 +9,8 @@ import Addproduct from "./Products/addproduct/addproduct.component";
 import Viewproducts from "./Products/viewproduct/viewproducts.component";
 import Editproduct from "./Products/editproduct/editproduct.component";
 import Searchproduct from "./Products/searchproduct/searchproduct.component";
+import Forgotpassword from "./forgotpassword/forgotpassword.component";
+import Resetpassword from "./resetpassword/resetpassword.component";
 export const Approuting=(props)=>{
     const home=(props)=>{
         console.log("props ib home",props)
@@ -67,6 +69,8 @@ export const Approuting=(props)=>{
                 <PublicRoute exact path="/" component={home}></PublicRoute>
                 <PublicRoute  path="/about" component={about}></PublicRoute>
                 <PublicRoute  path="/contact" component={contact}></PublicRoute>
+                <PublicRoute path="/reset_password/:token" component={Resetpassword}></PublicRoute>
+                <PublicRoute  path="/forgot-password" component={Forgotpassword}></PublicRoute>
                 <ProtectedRoute  path="/dashboard" component={dashboard}></ProtectedRoute>
                 <ProtectedRoute  path="/addproduct" component={Addproduct}></ProtectedRoute>
                 <ProtectedRoute  path="/viewproduct" component={Viewproducts}></ProtectedRoute>
