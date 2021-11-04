@@ -9,7 +9,7 @@ export const Sidebar = (props) => {
             <p><NavLink activeClassName="sidebaractive"  to="/viewproduct">View Product</NavLink></p>
             <p><NavLink activeClassName="sidebaractive"  to="/searchproduct">Search Product</NavLink></p>
             <hr></hr>
-            <p><NavLink activeClassName="sidebaractive"  to="/message">Messages</NavLink></p>
+            <p><NavLink activeClassName="sidebaractive"  to="/chat">Messages</NavLink></p>
             <p><NavLink activeClassName="sidebaractive"  to="/notifications">Notifications</NavLink></p>
 
         </div>

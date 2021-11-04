@@ -11,6 +11,7 @@ import Editproduct from "./Products/editproduct/editproduct.component";
 import Searchproduct from "./Products/searchproduct/searchproduct.component";
 import Forgotpassword from "./forgotpassword/forgotpassword.component";
 import Resetpassword from "./resetpassword/resetpassword.component";
+import Chat from "./Users/chat/chat.component";
 export const Approuting=(props)=>{
     const home=(props)=>{
         console.log("props ib home",props)
@@ -76,6 +77,7 @@ export const Approuting=(props)=>{
                 <ProtectedRoute  path="/viewproduct" component={Viewproducts}></ProtectedRoute>
                 <ProtectedRoute  path="/editproduct/:id" component={Editproduct}></ProtectedRoute>
                 <ProtectedRoute  path="/searchproduct/" component={Searchproduct}></ProtectedRoute>
+                <ProtectedRoute  path="/chat" component={Chat}></ProtectedRoute>
                 <PublicRoute  path="/help" component={help}></PublicRoute>
                 <PublicRoute component={Pagenotfound}></PublicRoute>
             </Switch>

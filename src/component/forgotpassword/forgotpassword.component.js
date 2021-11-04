@@ -28,7 +28,6 @@ export default class Forgotpassword extends Component {
                     ? ''
                     : "invalid email"
                 : 'email is required'
-
             this.setState({
                 emailerr: err
             })

@@ -1,20 +1,26 @@
-forget password and resetting password
+socket and event based communication in chat component
 
-1. we made forgot password class based component 
+1. make a class based component and register its route
+2. first read socket communication if node.js info.txt in git hub
+3.install 'socket.io-client';
+4.import io from 'socket.io-client';
+5.  componentDidMount(){
+        this.socket = io(SOCKET_URL)
+        
+    }  
 
-its a normal form and call the api for forgot password and rest of the work is done in backend,
-when you click the submit button 
-nacessary data: email is send to POST request to call api
-api is called and the link is send to your gmail to reset password from backend and you click that 
-link
-will redirect to reset_password page
+    6. now the connection is made and the further process is done by calling function in runsocket 
+    as 
+     componentDidMount(){
+        this.socket = io(SOCKET_URL)
+        this.runSocket();
+    }  
 
-that you will be creating 
+      runSocket=()=>{
+        this.socket.on('hello',(data)=>{
+            console.log("message in hello event",data)
+            this.socket.emit('hi',"hii from react app")
+        })
+    }
 
-
-you will give the password and and confirm by form validation and again rest of the task is given to backend
-reset_password api is called 
-
-if then({
-    redirect to login page(successfully resetted password) please login
-})
+look into chat.component.js for further more    
