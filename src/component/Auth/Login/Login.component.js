@@ -97,7 +97,8 @@ export class Login extends Component {
                 console.log(response)
                 notify.Successnotification(`welcome ${response.data.user.name}`)
                 localStorage.setItem('token',response.data.token)
-                localStorage.setItem('user',response.data.user)
+                localStorage.setItem('user',JSON.stringify(response.data.user))
+                console.log(response.data.user)
                 localStorage.setItem('remember_me',this.state.remember_me)
                 redirection(response.data.user.role,this.props.history)
                 this.setState({
