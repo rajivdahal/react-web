@@ -11,7 +11,7 @@ const http = axios.create({
 
 const getheaders=()=>{
     const token=localStorage.getItem('token')
-    console.log(token)
+    // console.log(token)
     let istokenavailable
     if(token){
          istokenavailable=true

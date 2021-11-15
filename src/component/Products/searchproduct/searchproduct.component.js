@@ -3,7 +3,7 @@ import { errorHandler } from '../../../utils/err.handler'
 import { httpClient } from '../../../utils/httpClient'
 import { notify } from '../../../utils/notify'
 import { Submitbtn } from '../../Common/Submitbtn/Submitbtn.component'
-import Viewproducts from '../viewproduct/viewproducts.component'
+import {Viewproducts} from '../viewproduct/viewproducts.component'
 const defaultForm = {
     name: '',
     category: '',

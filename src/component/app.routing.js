@@ -6,7 +6,7 @@ import { Pagenotfound } from "./Common/Pagenotfound/Pagenotfound.component";
 import { dashboard } from "./Users/dashboard/dashboard.component";
 import { Sidebar } from "./Common/Sidebar/sidebar.component";
 import Addproduct from "./Products/addproduct/addproduct.component";
-import Viewproducts from "./Products/viewproduct/viewproducts.component";
+import {Viewproducts} from "./Products/viewproduct/viewproducts.component";
 import Editproduct from "./Products/editproduct/editproduct.component";
 import Searchproduct from "./Products/searchproduct/searchproduct.component";
 import Forgotpassword from "./forgotpassword/forgotpassword.component";

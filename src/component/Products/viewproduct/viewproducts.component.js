@@ -7,9 +7,12 @@ import { Link } from 'react-router-dom'
 import { notify } from '../../../utils/notify'
 import { formatDate } from '../../../utils/dateUtils'
 // import Addproduct from '../addproduct/addproduct.component'
+import { fetchProducts} from '../../../actions/product.ac'
+import { removeProduct_ac } from '../../../actions/product.ac'
+import { connect } from 'react-redux'
 const IMG_URL = process.env.REACT_APP_IMG_URL
 
-export default class Viewproducts extends Component {
+class ViewProductsComponent extends Component {
     constructor() {
         super()
 
@@ -19,55 +22,59 @@ export default class Viewproducts extends Component {
         }
     }
     componentDidMount() {
-        if (this.props.productData) {
-            return this.setState({
-                products: this.props.productData
-            })
-        }
+        console.log("check props in view products component",this.props)
+        this.props.fetch()
+        // if (this.props.productData) {
+        //     return this.setState({
+        //         products: this.props.productData
+        //     })
+        // }
 
-        this.setState({
-            isloading: true
-        })
-        httpClient.GET('/product')
-            .then(response => {
-                this.setState({
-                    products: response.data
-                })
-            })
-            .catch(err => {
-                errorHandler(err)
-            })
-            .finally(() => {
-                this.setState({
-                    isloading: false
-                })
-            })
+        // this.setState({
+        //     isloading: true
+        // })
+        // httpClient.GET('/product')
+        //     .then(response => {
+        //         this.setState({
+        //             products: response.data
+        //         })
+        //     })
+        //     .catch(err => {
+        //         errorHandler(err)
+        //     })
+        //     .finally(() => {
+        //         this.setState({
+        //             isloading: false
+        //         })
+        //     })
     }
     removeproduct(id, index) {
         let confirmation = window.confirm("Are you sure to remove?");
         if (confirmation) {
-            httpClient.DELETE(`product/${id}`)
-                .then(response => {
-                    notify.Successnotification("product removed")
-                    const { products } = this.state
-                    products.splice(index, 1)
-                    this.setState({
-                        products
-                    })
-                })
-                .catch(err => {
-                    errorHandler(err)
-                })
+            this.props.removeProduct_ac(id)
+
+        //     httpClient.DELETE(`product/${id}`)
+        //         .then(response => {
+        //             notify.Successnotification("product removed")
+        //             const { products } = this.state
+        //             products.splice(index, 1)
+        //             this.setState({
+        //                 products
+        //             })
+        //         })
+        //         .catch(err => {
+        //             errorHandler(err)
+        //         })
         }
     }
     editproduct(id) {
         this.props.history.push(`/editproduct/${id}`)
     }
     render() {
-        const content = this.state.isloading ?
+        const content = this.props.isloading ?
             <p>loading......</p>
             :
-            this.state.products.length === 0 ?
+            this.props.products.length === 0 ?
                 <>
                     <p>no products available</p>
                     <p><Link to='/Addproduct'> add some products </Link></p>
@@ -88,8 +95,7 @@ export default class Viewproducts extends Component {
                         </thead>
                         <tbody>
                             {
-
-                                (this.state.products || []).map((item, index) => {
+                                (this.props.products || []).map((item, index) => {
                                     return (
                                         <tr key={index}>
                                             <th scope="row">{index + 1}</th>
@@ -119,3 +125,27 @@ export default class Viewproducts extends Component {
         )
     }
 }
+//map state to props
+//incoming data to store from component as an props
+const mapStateToProps=rootstore=>{
+    // console.log("at mapStateToProps")
+    return{
+        a:'abcd',
+        products:rootstore.product.products,
+        isloading:rootstore.product.isLoading,
+        // products:rootstore
+    }
+}
+
+//map dispatch to props
+//outgoing event from component
+const mapDispatchToProps=dispatch=>{
+    // console.log("at mapDispatchToProps")
+
+    return{
+        fetch:(params)=>dispatch(fetchProducts(params)),
+        removeProduct_ac:(id)=>dispatch(removeProduct_ac(id))
+    }
+}
+
+export const Viewproducts=connect(mapStateToProps,mapDispatchToProps)(ViewProductsComponent)

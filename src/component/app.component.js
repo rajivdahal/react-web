@@ -2,13 +2,18 @@ import React from "react"
 import { Approuting } from "./app.routing"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-export const App=(args)=>{
-    console.log(args)
+import { Provider } from "react-redux";
+import { store } from "../store";
+export const App = (args) => {
+    // console.log(args)
 
-    return(
+    return (
         <div>
-            <Approuting></Approuting>
-            <ToastContainer />
+            <Provider store={store}>
+                <Approuting></Approuting>
+                <ToastContainer />
+            </Provider>
+
         </div>
     )
 }

@@ -1,344 +1,272 @@
-chat application using socket communication
+redux
 
-1. make a chat ui 
-2. make a states and possible data to preserve
-    
-const defaultMessageBody={
-    senderId:'',
-    senderName:'',
-    message:'',
-    receiverId:'',
-    receiverName:'',
-    time:'',
+flow of redux:
 
-}
+State->views->action->reducer->store
 
-  this.state = {
-            msgBody:{
-                ...defaultMessageBody
+
+To view Products from state after calling api when loading viewproductcomponent at first
+1. make necessary files and folders
+  redux has action ,reducre and state files : make a folder actions and reducers inside src folder, while make store.js inside src 
+  primarily we want to change and manipulate the view product component so action has only one file that targets products 
+  inside actions 
+  product.ac.js
+  
+  reducer folder:
+    reducers are the controlling part for the states: necessary logic to update states are written inside reducers: 
+    reducers must contain rootreducers 
+    so rootreducer is index.js 
+     and necessarily particular reducers for particular actions are made the seperate files 
+     i.e. for manipulating products: product.red.js,for users: user.red.js and notifications: notifications.red.js 
+
+  store:
+    it  is the centralized state which is made inside src folder
+
+2. workflow and import mechanism
+
+ -> UI triggers action ->actions takes control to reducers -> reducers updates the state -> change in UI 
+ -> all the mechanism i.e. rendering of UI is done by change in either states or props but here is change in props 
+
+ 1st thing:
+    make a states: make necessary states that you need after fetching products as soon as you call API 
+
+    you need is Arrray of products so initialize products:[]
+
+    you need to create store and is imported redux 
+
+    createstore takes three arguments:rootreducer,initialstate and middleware
+    rootreducer must be imported and initialstate is the state that you made earlier and middleware is something that is asynchronous
+    (helps to make it) coz the API call is asynchronous:
+    import { createStore, applyMiddleware } from 'redux';
+
+            import thunk from 'redux-thunk';
+            import { rootReducer } from './reducers';
+            const middlewares = [thunk]
+            const initialState = {
+                product: {
+                    products: []
+                },
             }
-        }
-3.make handlechange and handlesubmit button 
-   handleChange=e=>{
-        const {name,value}=e.target
-        this.setState(prevstate=>{
-            return{
-                msgBody:{
-                    ...prevstate.msgBody,
-                    [name]:value
+
+            export const store = createStore(rootReducer, initialState, applyMiddleware(...middlewares))
+
+
+  2nd thing: go to viewcomponent file 
+  you need to access data directly from store thus need to connect UI component with store 
+  so import connect from react-redux at first 
+  
+  while doing connect
+  you need to export the component by connecting 
+  how?
+  just initialize the state and dont default export :
+            class ViewProductsComponent extends Component {
+            }
+   not 
+        export default class ViewProductsComponent extends Component {
+        }   
+   now you named export the component:
+        class ViewProductsComponent extends Component {
+            }
+export const Viewproducts=connect(mapStateToProps,mapDispatchToProps)(ViewProductsComponent)
+
+connect takes three args 
+first 2 args: 
+: mapStateToProps-> it takes the data from state as a props : i.e access the products state's data 
+                                mapDispatchToProps-> when the actions from UI component to change the states are triggered it takes those 
+                                action to action and action takes to reducers and finally reducers to change the state: 
+                                state data will consume by mapStateToProps as props and re-render the component
+last arg: is state itself where the store is accessing directly
+
+
+3. make action file:
+  in product.ac.js 
+  you are just going to fetch product by calling the api: API call is done in action file and you need to import this action file 
+  each function to view product component 
+
+
+                export const fetchProducts=params=>{
+                    console.log("at action file",params)
+                    return(dispatch)=>{
+                        dispatch({
+                            type:ProductActionTypes.SET_IS_LOADING,
+                            payload:trues
+                        })
+                        httpClient.GET('/product')
+                        .then((resp) => {
+                            console.log(resp)
+                            dispatch({
+                                type: ProductActionTypes.PRODUCTS_RECEIVED,
+                                payload: resp.data
+                            })
+                        })
+                        .catch(err => {
+                            errorHandler(err)
+                        })
+                        .finally(() => {
+                            dispatch({
+                                type: ProductActionTypes.SET_IS_LOADING,
+                                payload: false
+                            })
+                        })
+                    }
+                }
+    explanation and further steps:
+    the function is made and imported in viewproductcomponent: it will take props as argument and returns a function with dispatch
+    as argument:
+                     dispatch({
+                            type:ProductActionTypes.SET_IS_LOADING,
+                            payload:trues
+                        })
+    dispatch triggers reducers to set the state as in reducers setting of state is need to be maintained
+    what it does in UI:? till now api hasn/t hit so you need to set loader or give loading signal to Ui component and to set 
+    loading flag SER_IS_LOAGING is made true : payload true is for that signal
+
+    now the http client is called and the data obtained are send to receiver to update the state:
+    PRODUCTS_RECEIVED is the flag and payload is resp.data : else the same thing
+
+    finally when api call has finished you need to set loader false and that is what dispatch inside finally does 
+
+    where is  ProductActionTypes?
+
+    it is an object that is made in action file to give signal to reducers as cases: are made in reducers and according to these
+    types different actions are performed 
+
+                        export const ProductActionTypes = {
+                        SET_IS_LOADING: 'SET_IS_LOADING',
+                        PRODUCTS_RECEIVED: 'PRODUCTS_RECEIVED',
+                        PRODUCT_REMOVED:'PRODUCT_REMOVED'
+                    }
+
+    it is exported because needs to be imported in reducers:
+
+
+      how the action triggers when viewproducts component loads?
+
+    wnever you make the mapDispatchToProps automatically in this.props the functions that you make inside the function will stay
+
+    in viewproductcomponent:
+
+                        const mapDispatchToProps=dispatch=>{
+                        // console.log("at mapDispatchToProps")
+
+                        return{
+                            fetch:(params)=>dispatch(fetchProducts(params)),
+                        }
+                    }
+                in this.props: fetch()=> is already redistered as soon as you use connect 
+
+    and you call this function from props : in component did mount of viewproductcomponent
+                    componentDidMount() {
+                        console.log("check props in view products component",this.props)
+                        this.props.fetch()
+                    }    
+
+  upto here API call is successfully done and data are successfully sent to the reducers:
+
+4. Inside Reducers:
+    index.js -> it is rootreducers that you are importing in store.js 
+     there could be many reducers for many datas: 
+     eg. in Product->productreducer
+        in user->userreducers etc.
+     register each reducers in root register as
+
+     you need to import combinereducers as you are combining multiple reducers here once 
+
+                        import { combineReducers } from "redux";
+                    import { ProductReducer } from "./product.red";
+
+                    export const rootReducer=combineReducers({
+                        product:ProductReducer, 
+                        // user:userReducer
+                    })  
+
+
+    product.red is mentioned but the  logic is: as this roodreducers transfer control to respective reducers 
+
+                import { ProductActionTypes } from "../actions/product.ac"
+                    export const ProductReducer = (state, action) => {
+                        console.log('at reducer>>>>', action)
+                        // console.log("product reducer state is",state)
+                        switch (action.type) {
+                            case ProductActionTypes.SET_IS_LOADING:
+                                return {
+                                    ...state,
+                                    isLoading: action.payload
+                                }
+                            case ProductActionTypes.PRODUCTS_RECEIVED:
+                                return {
+                                    ...state,
+                                    products: action.payload
+                                }
+                        }
+                    }
+    this updates the stores state :
+    it takes states and action as argument: action has the object sent by dispatch from action file 
+    states has default state: products:[] and isloading:false 
+      state will be taken as in the form of object destructing:
+      from state :
+                product: {
+                    isLoading: false,
+                    products: []
+                }
+                this whole object is passed but 
+                in rootreducers 
+                export const rootReducer=combineReducers({
+                        product:ProductReducer,  //this product and the product object key i.e. states passed from state needs to be matched
+                        // user:userReducer
+                    })  
+        and inside productreducer:    
+                      isLoading: false,
+                    products: []  
+                    only these content is passed from rootreducers as object 
+                    so     
+                              return {
+                                    ...state,
+                                    products: action.payload
+                                }  
+                    this is possible 
+
+ upto here by fetching content and updating the state is done
+
+ 5. showing in UI 
+
+
+ UI has mapStateToProps which takes the data from store as an props 
+            const mapStateToProps=rootstore=>{
+                // console.log("at mapStateToProps")
+                return{
+                    a:'abcd',
+                    products:rootstore.product.products,
+                    isloading:rootstore.product.isLoading,
+                    // products:rootstore
                 }
             }
-        })
-    }
-    submit=e=>{
-        e.preventDefault()
-        const {msgBody}=this.state
+ mapstatetoprops takes roostore as argument and returns the object by taking data from rootstore after updating state in store
 
-    }
+ this is done at last 
 
-4. now on submit you need to send the massage to socket server and socket server will send back message to react/client and show
-that message in ui
-submit=e=>{
-        e.preventDefault()
-        const {msgBody}=this.state
-        msgBody.senderName=this.currentuser.username; // send sendername in socket server this is we get from the logged in info/localstorage by retrieving on componentDidMount
-        msgBody.time=Date.now()  //time of message send
-        this.socket.emit('new-message',msgBody)
+ now you need to show all the products to UI and not from state but from props :
+ so
+ in render()
+    const content = this.props.isloading ?
+            <p>loading......</p>
+            :show the content 
 
-    }
+where there was state at past but now it is props not state as data are in props not in state 
 
-     componentDidMount() {
-        this.socket = io(SOCKET_URL)
-        this.runSocket();
-        this.currentuser=JSON.parse(localStorage.getItem('user'))
-    }
 
-make on in server and emit the samemessage from server so that client can receive that message and show in ui
+whole total redux cycle has been completed 
 
- io.on('connection', function (client) {
-        console.log('client connected to socket server', client.id);
 
-        client.on('new-message',function(data){
-            client.emit('reply-message-own',data)
-        })
-    })
+other process is same for removing products and all 
 
-see in nodejs socket.js program
+things worked in this file:
+ fetching products 
+ removing products 
 
-now the message needs to be shown when it comes from socket server 
-so the emitted message from socket server are stored in message state as an array:
-add state message in this.state
+ cycle is same calling api is different as you did before
 
-message:[]
+                                
 
-in runsocket
-   runSocket = () => {
-        this.socket.on('reply-message-own', (data) => {
-            const { messages } = this.state
-            console.log("message is", data)
-            messages.push(data)
-            this.setState({
-                messages: messages
-            })
-        })
-    }
-
-show in UI 
-
-   <main className="msger-chat">
-
-                            {
-                                this.state.messages.map((item, index) => {
-                                    return (
-                                        <div className="msg left-msg" index={index}>
-                                            <div className="msg-img" ></div>
-                                            <div className="msg-bubble" >
-                                                <div className="msg-info">
-                                                    <div className="msg-info-name">{item.senderName}</div>
-                                                    <div className="msg-info-time">{relativeTime(item.time,"minutes")}</div>
-                                                </div>
-
-                                                <div className="msg-text">
-                                                    {item.message}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    )
-                                })
-                            }
-
-                        </main>
-
-the message now will be shown and the input should be empty: so in input field put name 
-<input type="text" value={this.state.msgBody.message} className=" msger-input" placeholder="Enter your message..." onChange={this.handleChange} name="message"></input>
-
-when the socket meessage from server comes and displayed in UI after submitting set the message state to ''
- submit = e => {
-        e.preventDefault()
-        const { msgBody } = this.state
-        msgBody.senderName = this.currentuser.username;
-        msgBody.time = Date.now()
-        this.socket.emit('new-message', msgBody)
-        this.setState({
-            msgBody:{
-                message:''
-            }
-        })
-
-    }
-
-
-5.the message is only displayed to those who is requesting that event, the message is not shown to other 
-but the message needs to be shown to other people
-
-so along with emit use broadcast in server
-emit-> it is used to show the content only for requesting server
-broadcast-> it is used to show the content for all other clients connected in socket server but not for the requesting client
-
-so to show both the requesting client and requesting server use both of them
-   io.on('connection', function (client) {
-        console.log('client connected to socket server', client.id);
-
-        client.on('new-message',function(data){
-            client.emit('reply-message-own',data)
-        })
-        client.on('new-message',function(data){
-            client.broadcast.emit('reply-message',data)
-        })
-    })
-
-now with emit requesitng client will get the info
-
-
- and with broadcast other clients will get the information
-
-
- for this message there should be handler in react so  in runsocket
-   runSocket = () => {
-        this.socket.on('reply-message-own', (data) => {
-            const { messages } = this.state
-            console.log("message is", data)
-            messages.push(data)
-            this.setState({
-                messages: messages
-            })
-        })
-        this.socket.on('reply-message', (data) => {
-            const { messages } = this.state
-            console.log("message is", data)
-            messages.push(data)
-            this.setState({
-                messages: messages
-            })
-        })
-        
-    }
-
-    upperpart is only for own messsage : when emit is called this block of code will only runsocket
-    for reply-message : when broadcast runs down part of code will runsocket
-    so include the both block of code for group chatting
-6. Private chat
-
-you need the information of the person who are active and who are not active: 
-active person: who are connected to the socket server
-inactive person: who are not connected to the socket server
-
-so from react when the person is opening react it should emit the username 
-and when react emits username server should store username and its id 
-
-to show all the users conencted server should emit all the users that are stored in array from above 2 className
-and in react 'on' case it should display all users emitted from the server
-
- i.in react emmit
-    runSocket = () => {
-        this.socket.emit('new-user', this.currentUser.username)
-    }
- ii. in server storer all users info 
-   io.on('connection', function (client) {
-        console.log('client connected to socket server', client.id);
-        var id = client.id;
-        client.on('new-user', function (username) {
-            users.push({
-                id: id,
-                name: username
-            })   
-        }
-   iii. emmit the users from server to client
-   client.emit('users', users)
-
-   complete code of server
-   initialize users as array
-
-          io.on('connection', function (client) {
-        console.log('client connected to socket server', client.id);
-        var id = client.id;
-        client.on('new-user', function (username) {
-            users.push({
-                id: id,
-                name: username
-            })
-           client.emit('users', users)
-            client.broadcast.emit('users', users) 
-        })
-
-        
-
-        client.on('new-message',function(data){
-            client.emit('reply-message-own',data)
-        })
-        client.on('new-message',function(data){
-            client.broadcast.emit('reply-message',data)
-        })
-    })
-
-}
-
-now the client  should show the information  on handling 'on' request 
-     
-3. show all active users
- 
- make a UI for the active users and add css for it
-
-    <h2> Active Users</h2>
-                        {this.state.users.map((user, index) => (
-                            <div key={index} className="msg left-msg ">
-                                <div
-                                    className="msg-img"
-                                >
-                                </div>
-                                <button className="btn btn-default" onClick={() => this.selectUser(user)}>{user.name}</button>
-
-                            </div>
-                        ))}
-
-
-the active users are those users who are currently connected to the socket server and from backend users are send to the front end 
-and handled according to that way 
-
-the active users are handled as 
-in node js socket.js
-client.on('disconnet',function(data){
-            users.forEach((user,index)=>{
-                if (user.id === id) {
-                    users.splice(index, 1)
-                }
-                client.broadcast.emit('users', users)
-
-            })
-        })
-
-loop all users present and in disconnect event: id is stored as default event for disconnection and if id is matched splice that user
-and emit that user on user event 
-
-
-4. Private chat with only one person 
-in front end if you click the person name in active users section their name and id as a receiver should me sent to socket server
-so
-
-<button className="btn btn-default" onClick={() => this.selectUser(user)}>{user.name}</button>
-
-in selectUser
-
- selectUser=user=>{
-        this.setState(prevstate=>{
-            return{
-                msgBody:{
-                    ...prevstate.msgBody,
-                    receiverId:user.id,
-                    receiverName:user.name,
-                }
-            }
-        })
-    }
-
-
-
-in server node js -socket.js
-
-client.on('new-message',function(data){
-            client.broadcast.to(data.receiverId).emit('reply-message',data)
-            // console.log(data.receiverid,data.receiver)
-        })
-
-now you can send message but if you haven't selected a user then still it will send message but to whom we don't know hence
-if userv haven't selected any user then give user proper message "please select a user to continue"
-
-for this in submit 
-
- if(!msgBody.receiverId){
-            return notify.Progressnotification("please select at least a user to communicate")
-        }
-
-now if any user is not selected it will give proper msg and error
-
-now the problem is when you send message by clicking the receiver you can send the message, but whenever you type the message from
-receiver to send message to sender it will again say please select a user to continue 
-
-for this you should send sender id as well as receiver id, and when the reply message event is triggered you exchange
-receiver id as sender id and communication will go on and on 
-
-add sender id in messagebody
- users.forEach((user, index) => {
-            if (user.name === this.currentUser.username) {
-                msgBody.senderId = user.id
-            }
-        })
-
-and exchange the receiver id to sender id when receiver sends the message
-    this.socket.on('reply-message', (data) => {
-            const { messages,msgBody } = this.state
-            msgBody.receiverId = data.senderId ///here it is 
-            console.log("message is", data)
-            messages.push(data)
-            this.setState({
-                messages: messages
-            })
-        })        
-
-
-
-
-
-
+   
 

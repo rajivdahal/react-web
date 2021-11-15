@@ -11,7 +11,7 @@ const logout=(props)=>{
 //as imported above and you need to wrap the component in withrouter and export by the naming convention as exportd below
 
 const Headercomponent=(props)=>{
-    console.log("props in header",props)
+    // console.log("props in header",props)
     
     //incoming props
     let content=props.isLoggedIn?
